@@ -8,25 +8,21 @@ export const Footer = props => {
     parseInt(since) < currentYear ? since + '-' + currentYear : currentYear
 
   return (
-    <footer
-      className={`z-10 dark:bg-black bg-white p-2 rounded-lg relative mt-6 flex-shrink-0 mb-4 w-full shadow dark:text-gray-200 `}>
-      {/* <hr className='my-2 border-black dark:border-gray-100' /> */}
-      {/* 页面底部 */}
-      <div className='w-full flex justify-between p-4 '>
+    <footer className='pix-card p-5 text-center'>
+      <div className='text-sm text-zinc-400 dark:text-zinc-500 space-y-1'>
         <p>
-          © {siteConfig('TITLE')} {copyrightDate}
+          © {copyrightDate} {siteConfig('TITLE')}
         </p>
-        <p>{siteConfig('DESCRIPTION')}</p>
-
-        <span className='dark:text-gray-200 no-underline ml-4'>
+        <p className='text-xs'>
           Powered by
           <a
             href='https://github.com/tangly1024/NotionNext'
-            className=' hover:underline'>
-            {' '}
-            NotionNext {siteConfig('VERSION')}{' '}
+            className='ml-1 hover:text-violet-500 dark:hover:text-violet-400 transition-colors'
+            target='_blank'
+            rel='noopener noreferrer'>
+            NotionNext
           </a>
-        </span>
+        </p>
       </div>
     </footer>
   )

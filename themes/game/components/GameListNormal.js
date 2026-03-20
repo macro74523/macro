@@ -24,7 +24,7 @@ export const GameListNormal = ({ games, maxCount = 18 }) => {
 
   return (
     <div className='game-list-wrapper w-full'>
-      <div className='game-grid mx-auto w-full h-full grid grid-cols-3 gap-2'>
+      <div className='game-grid mx-auto w-full h-full grid grid-cols-3 gap-4'>
         {components?.map((ItemComponent, index) => {
           return ItemComponent
         })}
@@ -54,9 +54,9 @@ const GameItem = ({ item }) => {
         setShowType('img')
       }}
       title={title}
-      className={`card-single h-28 w-28 relative shadow rounded-md overflow-hidden flex justify-center items-center 
-                group   hover:border-purple-400`}>
-      <div className='absolute text-sm bottom-2 transition-all duration-200 text-white z-30'>
+      className={`card-single h-44 w-44 relative shadow-lg hover:shadow-2xl rounded-xl overflow-hidden flex justify-center items-center 
+                group hover:border-purple-400 border-2 border-transparent transition-all duration-300`}>
+      <div className='absolute text-sm font-medium bottom-2 transition-all duration-200 text-white z-30 drop-shadow-lg'>
         {title}
       </div>
       <div className='h-1/2 w-full absolute left-0 bottom-0 z-20 opacity-75 transition-all duration-200'>
@@ -65,7 +65,7 @@ const GameItem = ({ item }) => {
 
       {showType === 'video' && (
         <video
-          className='z-10 object-cover w-auto h-28 absolute overflow-hidden'
+          className='z-10 object-cover w-auto h-44 absolute overflow-hidden'
           loop='true'
           autoPlay
           preload='none'>
@@ -73,7 +73,7 @@ const GameItem = ({ item }) => {
         </video>
       )}
       <img
-        className='w-full h-full absolute object-cover'
+        className='w-full h-full absolute object-cover group-hover:scale-110 duration-300 transition-all'
         src={img}
         alt={title}
       />

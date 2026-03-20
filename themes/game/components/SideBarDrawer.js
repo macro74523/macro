@@ -1,13 +1,9 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
-/**
- * 侧边栏抽屉面板，可以从侧面拉出
- * @returns {JSX.Element}
- * @constructor
- */
 const SideBarDrawer = ({ children, isOpen, onOpen, onClose, className }) => {
   const router = useRouter()
+  
   useEffect(() => {
     const sideBarDrawerRouteListener = () => {
       switchSideDrawerVisible(false)
@@ -18,7 +14,6 @@ const SideBarDrawer = ({ children, isOpen, onOpen, onClose, className }) => {
     }
   }, [router.events])
 
-  // 点击按钮更改侧边抽屉状态
   const switchSideDrawerVisible = showStatus => {
     if (showStatus) {
       onOpen && onOpen()
@@ -31,10 +26,10 @@ const SideBarDrawer = ({ children, isOpen, onOpen, onClose, className }) => {
     )
 
     if (showStatus) {
-      sideBarDrawer?.classList.replace('-ml-96', 'ml-0')
+      sideBarDrawer?.classList.replace('translate-x-full', 'translate-x-0')
       sideBarDrawerBackground?.classList.replace('hidden', 'block')
     } else {
-      sideBarDrawer?.classList.replace('ml-0', '-ml-96')
+      sideBarDrawer?.classList.replace('translate-x-0', 'translate-x-full')
       sideBarDrawerBackground?.classList.replace('block', 'hidden')
     }
   }
@@ -43,17 +38,16 @@ const SideBarDrawer = ({ children, isOpen, onOpen, onClose, className }) => {
     <div id='sidebar-wrapper' className={`top-0 ${className}`}>
       <div
         id='sidebar-drawer'
-        className={`${isOpen ? 'ml-0 visible opacity-100' : '-ml-96 invisible opacity-0'} w-96 bg-[#83FFE7] dark:bg-black shadow-black shadow-lg flex flex-col duration-300 fixed h-full left-0 overflow-y-scroll scroll-hidden top-0 z-30`}>
+        className={`${isOpen ? 'translate-x-0 visible opacity-100' : 'translate-x-full invisible opacity-0'} w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl flex flex-col duration-300 fixed h-full right-0 overflow-y-auto top-0 z-50`}>
         {children}
       </div>
 
-      {/* 背景蒙版 */}
       <div
         id='sidebar-drawer-background'
         onClick={() => {
           switchSideDrawerVisible(false)
         }}
-        className={`${isOpen ? 'visible opacity-100' : 'invisible opacity-0 '} animate__animated animate__fadeIn fixed top-0 duration-300 left-0 z-20 w-full h-full bg-black/70`}
+        className={`${isOpen ? 'visible opacity-100' : 'invisible opacity-0 '} fixed top-0 duration-300 left-0 z-40 w-full h-full bg-black/50 backdrop-blur-sm`}
       />
     </div>
   )

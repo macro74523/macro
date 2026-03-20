@@ -2,13 +2,6 @@ import { useGlobal } from '@/lib/global'
 import SmartLink from '@/components/SmartLink'
 import { useRouter } from 'next/router'
 
-/**
- * 简易翻页插件
- * @param page 当前页码
- * @param showNext 是否有下一页
- * @returns {JSX.Element}
- * @constructor
- */
 const PaginationSimple = ({ page, showNext }) => {
   const { locale } = useGlobal()
   const router = useRouter()
@@ -20,7 +13,7 @@ const PaginationSimple = ({ page, showNext }) => {
     .replace('.html', '')
 
   return (
-    <div className='my-10 flex justify-between font-medium text-black dark:text-gray-100 space-x-2'>
+    <div className='my-4 flex justify-between gap-4'>
       <SmartLink
         href={{
           pathname:
@@ -31,10 +24,9 @@ const PaginationSimple = ({ page, showNext }) => {
         }}
         passHref
         rel='prev'
-        className={`${
-          currentPage === 1 ? 'invisible' : 'visible'
-        } text-center w-full duration-200 px-4 py-2 hover:border-black dark:border-hexo-black-gray border-b-2 hover:font-bold`}>
-        ←{locale.PAGINATION.PREV}
+        className={`${currentPage === 1 ? 'invisible pointer-events-none' : ''} pix-card px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors`}>
+        <i className='fas fa-chevron-left mr-1'></i>
+        {locale.PAGINATION.PREV}
       </SmartLink>
       <SmartLink
         href={{
@@ -43,10 +35,9 @@ const PaginationSimple = ({ page, showNext }) => {
         }}
         passHref
         rel='next'
-        className={`${
-          showNext ? 'visible' : 'invisible'
-        } text-center w-full duration-200 px-4 py-2 hover:border-black dark:border-hexo-black-gray border-b-2 hover:font-bold`}>
-        {locale.PAGINATION.NEXT}→
+        className={`${showNext ? '' : 'invisible pointer-events-none'} pix-card px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors`}>
+        {locale.PAGINATION.NEXT}
+        <i className='fas fa-chevron-right ml-1'></i>
       </SmartLink>
     </div>
   )

@@ -1,83 +1,71 @@
-/* eslint-disable @next/next/no-img-element */
 import { deepClone } from '@/lib/utils'
 import SmartLink from '@/components/SmartLink'
 import { useState } from 'react'
+import LazyImage from '@/components/LazyImage'
 
-/**
- * 游戏列表- 关联游戏，在详情页展示
- * @returns
- */
 export const GameListRelate = ({ posts }) => {
   const gamesClone = deepClone(posts)
-
-  // 构造一个List<Component>
   const components = []
-  const maxCount = 24
+  const maxCount = 12
 
   let index = 0
-  // 无限循环
   while (gamesClone?.length > 0 && index < maxCount) {
     const item = gamesClone.shift()
-    components.push(<GameItem key={index} item={item} isLargeCard={true} />)
+    components.push(<GameItem key={index} item={item} />)
     index++
     continue
   }
 
+  if (components.length === 0) return null
+
   return (
-    <div className='game-list-wrapper w-full max-w-full overflow-x-auto'>
-      <div className='game-grid grid grid-flow-col justify-start gap-2'>
-        {components?.map((ItemComponent, index) => {
-          return ItemComponent
-        })}
+    <div className='pix-card p-4 mb-4'>
+      <div className='flex items-center justify-between mb-3'>
+        <h3 className='text-sm font-bold text-gray-800 dark:text-white flex items-center gap-1'>
+          <i className='fas fa-gamepad text-purple-500'></i>
+          相关推荐
+        </h3>
+        <span className='text-xs text-gray-400'>{components.length}</span>
+      </div>
+      <div className='w-full overflow-x-auto'>
+        <div className='flex gap-3' style={{ minWidth: 'min-content' }}>
+          {components}
+        </div>
       </div>
     </div>
   )
 }
 
-/**
- * 游戏=单卡
- * @param {*} param0
- * @returns
- */
 const GameItem = ({ item }) => {
   const { title } = item
-  const [showType, setShowType] = useState('img') // img or video
+  const [isHovered, setIsHovered] = useState(false)
   const img = item?.pageCoverThumbnail
-  const video = item?.ext?.video
 
   return (
     <SmartLink
       href={`${item?.href}`}
-      onMouseOver={() => {
-        setShowType('video')
-      }}
-      onMouseOut={() => {
-        setShowType('img')
-      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       title={title}
-      className={`card-single w-24 h-24 relative shadow rounded-md overflow-hidden flex justify-center items-center 
-                group   hover:border-purple-400`}>
-      <div className='text-xs text-center absolute bottom-0 invisible group-hover:bottom-2 group-hover:visible transition-all duration-200 text-white z-30'>
-        {title}
-      </div>
-      <div className='h-2/3 w-full absolute left-0 bottom-0 z-20 opacity-0 group-hover:opacity-75 transition-all duration-200'>
-        <div className='h-full w-full absolute bg-gradient-to-b from-transparent to-black'></div>
-      </div>
-
-      {showType === 'video' && (
-        <video
-          className={`z-10 object-cover w-full h-24 absolute overflow-hidden`}
-          loop='true'
-          autoPlay
-          preload='none'>
-          <source src={video} type='video/mp4' />
-        </video>
+      className='relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden cursor-pointer group'>
+      {img ? (
+        <LazyImage
+          src={img}
+          alt={title}
+          className={`w-full h-full object-cover transition-transform duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`}
+          priority
+          fill='full'
+        />
+      ) : (
+        <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
+          <i className='fas fa-gamepad text-white/50'></i>
+        </div>
       )}
-      <img
-        className='w-24 h-24 absolute object-cover group-hover:scale-105 duration-100 transition-all'
-        src={img}
-        alt={title}
-      />
+
+      <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10'></div>
+      <div className='absolute bottom-1 left-1 right-1 z-20'>
+        <p className='text-xs text-white line-clamp-1'>{title}</p>
+      </div>
     </SmartLink>
   )
 }

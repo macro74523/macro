@@ -1,25 +1,19 @@
-/* eslint-disable @next/next/no-img-element */
 import { deepClone } from '@/lib/utils'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useGameGlobal } from '..'
+import LazyImage from '@/components/LazyImage'
 
-/**
- * 游戏列表- 最近游戏
- * @returns
- */
-export const GameListRecent = ({ maxCount = 14 }) => {
+export const GameListRecent = ({ maxCount = 10 }) => {
   const { recentGames } = useGameGlobal()
   const gamesClone = deepClone(recentGames)
-  // 构造一个List<Component>
   const components = []
 
   let index = 0
-  // 无限循环
   while (gamesClone?.length > 0 && index < maxCount) {
     const item = gamesClone?.shift()
     if (item) {
-      components.push(<GameItem key={index} item={item} isLargeCard={true} />)
+      components.push(<GameItem key={index} item={item} />)
       index++
     }
     continue
@@ -30,102 +24,78 @@ export const GameListRecent = ({ maxCount = 14 }) => {
   }
 
   return (
-    <>
-      <div className='game-list-recent-wrapper w-full max-w-full overflow-x-auto pt-4 px-2 md:px-0'>
-        <div className='game-grid md:flex grid grid-flow-col gap-2'>
-          {components?.map((ItemComponent, index) => {
-            return ItemComponent
-          })}
+    <div className='pix-card p-4 mb-4'>
+      <div className='flex items-center justify-between mb-3'>
+        <h3 className='text-sm font-bold text-gray-800 dark:text-white flex items-center gap-1'>
+          <i className='fas fa-clock-rotate-left text-purple-500'></i>
+          最近浏览
+        </h3>
+        <span className='text-xs text-gray-400'>{components.length}</span>
+      </div>
+      <div className='w-full overflow-x-auto'>
+        <div className='flex gap-3' style={{ minWidth: 'min-content' }}>
+          {components}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
-/**
- * 游戏=单卡
- * @param {*} param0
- * @returns
- */
 const GameItem = ({ item }) => {
   const router = useRouter()
   const { recentGames, setRecentGames } = useGameGlobal()
   const { title } = item || {}
-  const [showType, setShowType] = useState('img') // img or video
-  const [isClockVisible, setClockVisible] = useState(true)
-  const toggleIcons = () => {
-    setClockVisible(!isClockVisible)
-  }
-  /**
-   * 移除最近
-   */
-  const removeRecent = () => {
-    const updatedRecentGames = deepClone(recentGames) // 创建一个 recentGames 的副本
+  const [isHovered, setIsHovered] = useState(false)
+
+  const removeRecent = e => {
+    e.stopPropagation()
+    const updatedRecentGames = deepClone(recentGames)
     const indexToRemove = updatedRecentGames.findIndex(
       game => game?.title === item.title
-    ) // 找到要移除的项的索引
+    )
     if (indexToRemove !== -1) {
-      updatedRecentGames.splice(indexToRemove, 1) // 使用 splice 方法删除项
-      setRecentGames(updatedRecentGames) // 更新 recentGames 状态
+      updatedRecentGames.splice(indexToRemove, 1)
+      setRecentGames(updatedRecentGames)
       localStorage.setItem('recent_games', JSON.stringify(updatedRecentGames))
     }
   }
 
   const handleButtonClick = () => {
-    router.push(item?.href) // 如果是 Next.js
+    router.push(item?.href)
   }
 
   const img = item?.pageCoverThumbnail
-  const video = item?.ext?.video
 
   return (
     <div
       onClick={handleButtonClick}
-      onMouseOver={() => {
-        setShowType('video')
-      }}
-      onMouseOut={() => {
-        setShowType('img')
-      }}
-      title={title}
-      className={`cursor-pointer card-single h-28 w-28 relative shadow rounded-md overflow-hidden flex justify-center items-center 
-                group hover:border-purple-400`}>
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className='relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden cursor-pointer group'>
       <button
-        className='absolute right-0.5 top-1 z-20'
-        onClick={e => {
-          e.stopPropagation() // 阻止事件冒泡，防止触发父级元素的点击事件
-          removeRecent()
-        }}
-        onMouseEnter={toggleIcons}
-        onMouseLeave={toggleIcons}>
-        {isClockVisible ? (
-          <i className='fas fa-clock-rotate-left w-6 h-6 flex items-center justify-center shadow rounded-full bg-white text-blue-500 text-sm'></i>
-        ) : (
-          <i className='fas fa-trash-can w-6 h-6 flex items-center justify-center shadow rounded-full bg-white text-red-500 text-sm'></i>
-        )}
+        onClick={removeRecent}
+        className='absolute top-1 right-1 z-20 w-4 h-4 flex items-center justify-center rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity'>
+        <i className='fas fa-times text-xs'></i>
       </button>
 
-      <div className='absolute text-sm bottom-2 transition-all duration-200 text-white z-30'>
-        {title}
-      </div>
-      <div className='h-1/2 w-full absolute left-0 bottom-0 z-20 opacity-75 transition-all duration-200'>
-        <div className='h-full w-full absolute bg-gradient-to-b from-transparent to-black'></div>
-      </div>
-
-      {showType === 'video' && (
-        <video
-          className='z-10 object-cover w-auto h-28 absolute overflow-hidden'
-          loop='true'
-          autoPlay
-          preload='none'>
-          <source src={video} type='video/mp4' />
-        </video>
+      {img ? (
+        <LazyImage
+          src={img}
+          alt={title}
+          className={`w-full h-full object-cover transition-transform duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`}
+          priority
+          fill='full'
+        />
+      ) : (
+        <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
+          <i className='fas fa-gamepad text-white/50'></i>
+        </div>
       )}
-      <img
-        className='w-full h-full absolute object-cover group-hover:scale-105 duration-100 transition-all'
-        src={img}
-        alt={title}
-      />
+
+      <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10'></div>
+      <div className='absolute bottom-1 left-1 right-1 z-20'>
+        <p className='text-xs text-white line-clamp-1'>{title}</p>
+      </div>
     </div>
   )
 }
