@@ -70,7 +70,7 @@ const ShareBar = ({ post }) => {
   ]
 
   return (
-    <div className='my-4'>
+    <div className='my-4 flex flex-col items-end'>
       <h4 className='text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-3 flex items-center gap-1.5'>
         <i className='fas fa-share-alt text-violet-500'></i>
         分享到

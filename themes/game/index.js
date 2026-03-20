@@ -323,20 +323,15 @@ const Layout404 = props => {
 }
 
 const LayoutCategoryIndex = props => {
-  const { categoryOptions, siteInfo } = props
+  const { categoryOptions, allNavPages } = props
 
-  const categoryIcons = [
-    'fas fa-folder',
-    'fas fa-book',
-    'fas fa-code',
-    'fas fa-palette',
-    'fas fa-music',
-    'fas fa-camera',
-    'fas fa-gamepad',
-    'fas fa-film',
-    'fas fa-newspaper',
-    'fas fa-lightbulb'
-  ]
+  const getCategoryCover = categoryName => {
+    const categoryPosts = allNavPages?.filter(post => post.category === categoryName)
+    if (categoryPosts && categoryPosts.length > 0) {
+      return categoryPosts[0].pageCoverThumbnail || categoryPosts[0].pageCover
+    }
+    return null
+  }
 
   return (
     <>
@@ -349,40 +344,34 @@ const LayoutCategoryIndex = props => {
         </p>
       </div>
       
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
         {categoryOptions?.map((category, index) => {
-          const icon = categoryIcons[index % categoryIcons.length]
-          const colors = [
-            'from-violet-500 to-purple-500',
-            'from-blue-500 to-cyan-500',
-            'from-emerald-500 to-teal-500',
-            'from-orange-500 to-amber-500',
-            'from-pink-500 to-rose-500',
-            'from-indigo-500 to-blue-500',
-            'from-red-500 to-orange-500',
-            'from-cyan-500 to-blue-500',
-            'from-teal-500 to-green-500',
-            'from-purple-500 to-pink-500'
-          ]
-          const color = colors[index % colors.length]
+          const cover = getCategoryCover(category.name)
           
           return (
             <SmartLink
               key={category.name}
               href={`/category/${category.name}`}
-              className='group bg-white dark:bg-zinc-900 rounded-lg p-4 hover:shadow-md transition-all duration-300 border border-zinc-100 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700'>
-              <div className='flex items-start gap-3'>
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-                  <i className={`${icon} text-white text-sm`}></i>
+              className='group relative block aspect-[4/3] rounded-xl overflow-hidden cursor-pointer bg-zinc-100 dark:bg-zinc-800'>
+              {cover ? (
+                <img
+                  src={cover}
+                  alt={category.name}
+                  className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
+                />
+              ) : (
+                <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
+                  <i className='fas fa-folder text-white/30 text-4xl'></i>
                 </div>
-                <div className='flex-1 min-w-0'>
-                  <h3 className='text-sm font-medium text-zinc-800 dark:text-zinc-100 truncate group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors'>
-                    {category.name}
-                  </h3>
-                  <p className='text-xs text-zinc-400 dark:text-zinc-500 mt-1'>
-                    {category.count} 篇文章
-                  </p>
-                </div>
+              )}
+              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
+              <div className='absolute bottom-0 left-0 right-0 p-4'>
+                <h3 className='text-lg font-bold text-white mb-1 truncate'>
+                  {category.name}
+                </h3>
+                <p className='text-sm text-white/80'>
+                  {category.count} 篇文章
+                </p>
               </div>
             </SmartLink>
           )

@@ -121,10 +121,12 @@ export default function SearchModal({ allNavPages, siteInfo }) {
                 '输入关键词开始搜索'
               )}
             </span>
-            <span className='flex items-center gap-1'>
+            <button
+              onClick={() => setSideBarVisible(false)}
+              className='flex items-center gap-1 hover:text-violet-500 transition-colors cursor-pointer'>
               <kbd className='px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-xs'>ESC</kbd>
               <span>关闭</span>
-            </span>
+            </button>
           </div>
         </div>
 
