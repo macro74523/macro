@@ -1,73 +1,83 @@
 import LazyImage from '@/components/LazyImage'
 import { siteConfig } from '@/lib/config'
 import SmartLink from '@/components/SmartLink'
+import { useState } from 'react'
 
 export const ArticleList = ({ posts }) => {
   if (!posts || posts.length === 0) return null
 
   return (
-    <div className='space-y-0'>
+    <div className='columns-2 gap-3 space-y-3'>
       {posts.map((post, index) => (
-        <ArticleCard key={post.id || index} post={post} />
+        <ArticleCard key={post.id || index} post={post} index={index} />
       ))}
     </div>
   )
 }
 
-const ArticleCard = ({ post }) => {
+const ArticleCard = ({ post, index }) => {
   const title = post.title
   const summary = post.summary
   const cover = post.pageCoverThumbnail || post.pageCover
   const date = post.publishDay || post.publishDate
   const category = post.category
   const author = siteConfig('AUTHOR') || '博主'
+  const [isHovered, setIsHovered] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
+
+  const heights = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-[1/1]', 'aspect-[4/6]', 'aspect-[3/5]']
+  const randomAspect = heights[index % heights.length]
 
   return (
-    <article className='pix-card overflow-hidden group'>
-      <SmartLink href={post.href} title={title} className='flex gap-4 p-5'>
-        <div className='flex-shrink-0 w-36 h-24 sm:w-44 sm:h-28 overflow-hidden bg-zinc-100 dark:bg-zinc-800'>
+    <article className='break-inside-avoid bg-white dark:bg-zinc-900 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group'>
+      <SmartLink 
+        href={post.href} 
+        title={title} 
+        className='block'
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}>
+        
+        <div className={`relative ${randomAspect} overflow-hidden bg-zinc-100 dark:bg-zinc-800`}>
           {cover ? (
-            <LazyImage
-              src={cover}
-              alt={title}
-              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
-              priority
-              fill='full'
-            />
+            <>
+              {!imageLoaded && (
+                <div className='absolute inset-0 bg-zinc-200 dark:bg-zinc-700 animate-pulse' />
+              )}
+              <LazyImage
+                src={cover}
+                alt={title}
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${isHovered ? 'scale-105' : 'scale-100'} ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                priority
+                fill='full'
+                onLoad={() => setImageLoaded(true)}
+              />
+            </>
           ) : (
-            <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
-              <i className='fas fa-image text-2xl text-white/50'></i>
+            <div className='absolute inset-0 pix-gradient-bg flex items-center justify-center'>
+              <i className='fas fa-image text-3xl text-white/30'></i>
             </div>
           )}
         </div>
 
-        <div className='flex-1 min-w-0 flex flex-col justify-between py-0.5'>
-          <div>
-            <h3 className='text-base font-medium text-zinc-800 dark:text-zinc-100 mb-1.5 line-clamp-1 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors'>
-              {title}
-            </h3>
-
-            {summary && (
-              <p className='text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2 mb-2'>
-                {summary}
-              </p>
-            )}
-          </div>
-
-          <div className='flex items-center gap-4 text-xs text-zinc-400 dark:text-zinc-500'>
-            <span className='flex items-center gap-1.5'>
-              <i className='fas fa-user text-zinc-300 dark:text-zinc-600'></i>
-              @{author}
+        <div className='p-3'>
+          <h3 className='text-sm font-medium text-zinc-800 dark:text-zinc-100 line-clamp-2 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors mb-2 leading-snug'>
+            {title}
+          </h3>
+          
+          {summary && (
+            <p className='text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mb-2 leading-relaxed'>
+              {summary}
+            </p>
+          )}
+          
+          <div className='flex items-center gap-2'>
+            <div className='w-5 h-5 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0'>
+              <i className='fas fa-user text-[8px] text-zinc-400 dark:text-zinc-500 flex items-center justify-center w-full h-full'></i>
+            </div>
+            <span className='text-xs text-zinc-400 dark:text-zinc-500 truncate flex-1'>{author}</span>
+            <span className='flex items-center gap-0.5 text-xs text-zinc-300 dark:text-zinc-600'>
+              <i className='far fa-heart text-[10px]'></i>
             </span>
-            <span className='flex items-center gap-1.5'>
-              <i className='far fa-calendar-alt text-zinc-300 dark:text-zinc-600'></i>
-              {date}
-            </span>
-            {category && (
-              <span className='hidden sm:inline-flex items-center gap-1 px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'>
-                {category}
-              </span>
-            )}
           </div>
         </div>
       </SmartLink>
