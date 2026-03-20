@@ -2,12 +2,11 @@ import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
 import { useGameGlobal } from '..'
 import CONFIG from '../config'
-import DarkModeButton from './DarkModeButton'
 import { MenuItemDrop } from './MenuItemDrop'
 
 export const MenuList = props => {
   const { setSideBarVisible } = useGameGlobal()
-  const { customNav, customMenu } = props
+  const { customNav, customMenu, siteInfo } = props
   const { locale } = useGlobal()
   
   const defaultLinks = [
@@ -52,9 +51,25 @@ export const MenuList = props => {
 
   return (
     <nav className='space-y-1'>
-      <div className='flex items-center justify-between px-3 py-2.5 mb-3 bg-zinc-50 dark:bg-zinc-800/50'>
-        <span className='text-xs text-zinc-400 dark:text-zinc-500 font-medium'>主题切换</span>
-        <DarkModeButton />
+      <div className='flex flex-col items-center mb-4 pb-4 border-b border-zinc-100 dark:border-zinc-800'>
+        <div className='w-14 h-14 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 mb-3'>
+          {siteInfo?.icon ? (
+            <img src={siteInfo.icon} alt='avatar' className='w-full h-full object-cover' />
+          ) : (
+            <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
+              <i className='fas fa-user text-white'></i>
+            </div>
+          )}
+        </div>
+        <div className='text-center'>
+          <h5 className='text-sm font-medium text-zinc-800 dark:text-zinc-100'>
+            {siteInfo?.title || '博主'}
+          </h5>
+          <p className='text-xs text-zinc-400 dark:text-zinc-500 flex items-center justify-center gap-1 mt-1'>
+            <i className='fas fa-map-marker-alt text-[10px]'></i>
+            {siteConfig('LOCATION') || '中国'}
+          </p>
+        </div>
       </div>
 
       <button

@@ -4,7 +4,6 @@ import { AdSlot } from '@/components/GoogleAdsense'
 import replaceSearchResult from '@/components/Mark'
 import NotionPage from '@/components/NotionPage'
 import { PWA as initialPWA } from '@/components/PWA'
-import ShareBar from '@/components/ShareBar'
 import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
 import { loadWowJS } from '@/lib/plugins/wow'
@@ -24,9 +23,11 @@ import Header from './components/Header'
 import { MenuList } from './components/MenuList'
 import { ArticleLock } from './components/ArticleLock'
 import PostInfo from './components/PostInfo'
+import ShareBar from './components/ShareBar'
 import RightSidebar from './components/RightSidebar'
 import SearchModal from './components/SearchModal'
 import CategoryTabs from './components/CategoryTabs'
+import BackToTop from './components/BackToTop'
 import CONFIG from './config'
 import { Style } from './style'
 
@@ -84,30 +85,30 @@ const LayoutBase = props => {
 
         <div
           id='wrapper'
-          className='relative flex justify-center w-full mx-auto gap-0 px-6 pt-8 max-w-[1300px]'>
-          <aside className='w-[180px] hidden lg:block flex-shrink-0'>
-            <div className='sticky top-8'>
-              <div className='pix-card p-4'>
+          className='relative flex justify-center w-full mx-auto gap-0 max-w-[1300px] pt-6 px-4'>
+          <div className='bg-white dark:bg-zinc-900 rounded-xl shadow-sm flex w-full overflow-hidden'>
+            <aside className='w-[180px] hidden lg:block flex-shrink-0 border-r border-zinc-100 dark:border-zinc-800'>
+              <div className='sticky top-8 p-4'>
                 <MenuList {...props} />
               </div>
-            </div>
-          </aside>
+            </aside>
 
-          <main className='flex-1 min-w-0 min-h-screen px-5'>
-            {children}
-            <div className='py-4'>
-              <AdSlot type='in-article' />
-            </div>
-            <Footer />
-          </main>
+            <main className='flex-1 min-w-0 min-h-screen px-5 py-6'>
+              {children}
+              <div className='py-4'>
+                <AdSlot type='in-article' />
+              </div>
+              <Footer />
+            </main>
 
-          <RightSidebar
-            siteInfo={siteInfo}
-            tagOptions={tagOptions}
-            categoryOptions={categoryOptions}
-            postCount={postCount}
-            notice={notice}
-          />
+            <RightSidebar
+              siteInfo={siteInfo}
+              tagOptions={tagOptions}
+              categoryOptions={categoryOptions}
+              postCount={postCount}
+              notice={notice}
+            />
+          </div>
         </div>
 
         <SearchModal siteInfo={siteInfo} {...props} />
@@ -242,13 +243,16 @@ const LayoutSlug = props => {
 
       {!lock && post && (
         <div id='article-wrapper'>
+          <div className='lg:hidden mb-4'>
+            <Header siteInfo={siteInfo} />
+          </div>
           <div className='game-detail-wrapper w-full grow flex'>
             <div className={`w-full`}>
               <GameEmbed post={post} siteInfo={siteInfo} />
 
               <div className='game-info py-2 mt-14 md:mt-0'>
                 {post && (
-                  <div className='pix-card p-0 sm:p-4 mb-0 sm:mb-4'>
+                  <div className='mb-4'>
                     <PostInfo post={post} />
                     <NotionPage post={post} />
                     <AdSlot />
@@ -263,6 +267,7 @@ const LayoutSlug = props => {
           <GameListIndexCombine posts={randomGames} />
         </div>
       )}
+      <BackToTop />
     </>
   )
 }
