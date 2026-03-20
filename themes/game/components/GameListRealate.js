@@ -6,7 +6,7 @@ import LazyImage from '@/components/LazyImage'
 export const GameListRelate = ({ posts }) => {
   const gamesClone = deepClone(posts)
   const components = []
-  const maxCount = 12
+  const maxCount = 6
 
   let index = 0
   while (gamesClone?.length > 0 && index < maxCount) {
@@ -19,16 +19,13 @@ export const GameListRelate = ({ posts }) => {
   if (components.length === 0) return null
 
   return (
-    <div className='pix-card p-4 mb-4'>
-      <div className='flex items-center justify-between mb-3'>
-        <h3 className='text-sm font-bold text-gray-800 dark:text-white flex items-center gap-1'>
-          <i className='fas fa-gamepad text-purple-500'></i>
-          相关推荐
-        </h3>
-        <span className='text-xs text-gray-400'>{components.length}</span>
-      </div>
-      <div className='w-full overflow-x-auto'>
-        <div className='flex gap-3' style={{ minWidth: 'min-content' }}>
+    <div className='mb-4'>
+      <h3 className='text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-3 flex items-center gap-1.5'>
+        <i className='fas fa-lightbulb text-amber-500 text-xs'></i>
+        相关推荐
+      </h3>
+      <div className='w-full overflow-x-auto scrollbar-hide'>
+        <div className='flex gap-2' style={{ minWidth: 'min-content' }}>
           {components}
         </div>
       </div>
@@ -47,24 +44,24 @@ const GameItem = ({ item }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       title={title}
-      className='relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden cursor-pointer group'>
-      {img ? (
-        <LazyImage
-          src={img}
-          alt={title}
-          className={`w-full h-full object-cover transition-transform duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`}
-          priority
-          fill='full'
-        />
-      ) : (
-        <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
-          <i className='fas fa-gamepad text-white/50'></i>
-        </div>
-      )}
-
-      <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10'></div>
-      <div className='absolute bottom-1 left-1 right-1 z-20'>
-        <p className='text-xs text-white line-clamp-1'>{title}</p>
+      className='relative flex-shrink-0 w-24 rounded-md overflow-hidden cursor-pointer group bg-zinc-100 dark:bg-zinc-800'>
+      <div className='aspect-[4/3] overflow-hidden'>
+        {img ? (
+          <LazyImage
+            src={img}
+            alt={title}
+            className={`w-full h-full object-cover transition-transform duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`}
+            priority
+            fill='full'
+          />
+        ) : (
+          <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
+            <i className='fas fa-image text-white/30 text-sm'></i>
+          </div>
+        )}
+      </div>
+      <div className='p-1.5'>
+        <p className='text-xs text-zinc-700 dark:text-zinc-300 line-clamp-1 group-hover:text-violet-500 transition-colors'>{title}</p>
       </div>
     </SmartLink>
   )
