@@ -10,8 +10,6 @@ export default function CategoryTabs({ categories, currentCategory }) {
 
   const defaultTabs = [
     { name: '推荐', href: '/', icon: 'fas fa-fire' },
-    { name: '最新', href: '/?sort=latest', icon: 'fas fa-clock' },
-    { name: '热门', href: '/?sort=hot', icon: 'fas fa-chart-line' },
   ]
 
   const allTabs = [...defaultTabs, ...(categories || []).map(c => ({ name: c.name, href: `/category/${c.name}`, count: c.count }))]

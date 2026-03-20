@@ -16,7 +16,7 @@ const ShareBar = ({ post }) => {
   const [shareUrl, setShareUrl] = useState(siteConfig('LINK') + router.asPath)
   const [qrCodeShow, setQrCodeShow] = useState(false)
   const title = post?.title || siteConfig('TITLE')
-  const body = post?.title + ' | ' + title + ' ' + shareUrl + ' ' + post?.summary
+  const body = `${post?.title || ''} | ${title} ${shareUrl} ${post?.summary || ''}`
 
   useEffect(() => {
     setShareUrl(window.location.href)

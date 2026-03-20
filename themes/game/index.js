@@ -25,6 +25,7 @@ import { ArticleLock } from './components/ArticleLock'
 import PostInfo from './components/PostInfo'
 import ShareBar from './components/ShareBar'
 import RightSidebar from './components/RightSidebar'
+import PostSidebar from './components/PostSidebar'
 import SearchModal from './components/SearchModal'
 import CategoryTabs from './components/CategoryTabs'
 import BackToTop from './components/BackToTop'
@@ -44,7 +45,8 @@ const LayoutBase = props => {
     categoryOptions,
     currentCategory,
     postCount,
-    notice
+    notice,
+    post
   } = props
   const searchModal = useRef(null)
   const [filterKey, setFilterKey] = useState('')
@@ -85,15 +87,15 @@ const LayoutBase = props => {
 
         <div
           id='wrapper'
-          className='relative flex justify-center w-full mx-auto gap-0 max-w-[1300px] pt-6 px-4'>
-          <div className='bg-white dark:bg-zinc-900 rounded-xl shadow-sm flex w-full overflow-hidden'>
+          className='relative flex justify-center w-full mx-auto gap-0 max-w-[1300px] lg:pt-10 pt-4 lg:px-4 px-0'>
+          <div className='bg-white dark:bg-zinc-900 lg:rounded-xl shadow-sm flex w-full'>
             <aside className='w-[180px] hidden lg:block flex-shrink-0 border-r border-zinc-100 dark:border-zinc-800'>
               <div className='sticky top-8 p-4'>
                 <MenuList {...props} />
               </div>
             </aside>
 
-            <main className='flex-1 min-w-0 min-h-screen px-5 py-6'>
+            <main className='flex-1 min-w-0 min-h-screen lg:px-5 px-3 py-6'>
               {children}
               <div className='py-4'>
                 <AdSlot type='in-article' />
@@ -101,13 +103,17 @@ const LayoutBase = props => {
               <Footer />
             </main>
 
-            <RightSidebar
-              siteInfo={siteInfo}
-              tagOptions={tagOptions}
-              categoryOptions={categoryOptions}
-              postCount={postCount}
-              notice={notice}
-            />
+            {post ? (
+              <PostSidebar post={post} />
+            ) : (
+              <RightSidebar
+                siteInfo={siteInfo}
+                tagOptions={tagOptions}
+                categoryOptions={categoryOptions}
+                postCount={postCount}
+                notice={notice}
+              />
+            )}
           </div>
         </div>
 
@@ -197,9 +203,23 @@ const LayoutSearch = props => {
 
 const LayoutArchive = props => {
   const { archivePosts } = props
+  const totalPosts = Object.values(archivePosts || {}).reduce((sum, posts) => sum + posts.length, 0)
+  
   return (
     <>
-      <div className='pix-card p-4 min-h-screen'>
+      <div className='mb-6'>
+        <div className='flex items-center gap-3 mb-2'>
+          <div className='w-10 h-10 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center'>
+            <i className='fas fa-archive text-violet-500'></i>
+          </div>
+          <div>
+            <h1 className='text-xl font-bold text-zinc-800 dark:text-zinc-100'>归档</h1>
+            <p className='text-xs text-zinc-400 dark:text-zinc-500'>共 {totalPosts} 篇文章</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className='space-y-8'>
         {Object.keys(archivePosts).map(archiveTitle => (
           <BlogArchiveItem
             key={archiveTitle}

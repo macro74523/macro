@@ -1,5 +1,4 @@
 import LazyImage from '@/components/LazyImage'
-import { siteConfig } from '@/lib/config'
 import SmartLink from '@/components/SmartLink'
 import { useState } from 'react'
 
@@ -17,11 +16,7 @@ export const ArticleList = ({ posts }) => {
 
 const ArticleCard = ({ post, index }) => {
   const title = post.title
-  const summary = post.summary
   const cover = post.pageCoverThumbnail || post.pageCover
-  const date = post.publishDay || post.publishDate
-  const category = post.category
-  const author = siteConfig('AUTHOR') || '博主'
   const [isHovered, setIsHovered] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
 
@@ -60,21 +55,10 @@ const ArticleCard = ({ post, index }) => {
         </div>
 
         <div className='p-3'>
-          <h3 className='text-sm font-medium text-zinc-800 dark:text-zinc-100 line-clamp-2 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors mb-2 leading-snug'>
+          <h3 className='text-sm font-medium text-zinc-800 dark:text-zinc-100 line-clamp-2 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors leading-snug'>
             {title}
           </h3>
-          
-          {summary && (
-            <p className='text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mb-2 leading-relaxed'>
-              {summary}
-            </p>
-          )}
-          
-          <div className='flex items-center gap-2'>
-            <div className='w-5 h-5 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0'>
-              <i className='fas fa-user text-[8px] text-zinc-400 dark:text-zinc-500 flex items-center justify-center w-full h-full'></i>
-            </div>
-            <span className='text-xs text-zinc-400 dark:text-zinc-500 truncate flex-1'>{author}</span>
+          <div className='flex items-center justify-end mt-2'>
             <span className='flex items-center gap-0.5 text-xs text-zinc-300 dark:text-zinc-600'>
               <i className='far fa-heart text-[10px]'></i>
             </span>
