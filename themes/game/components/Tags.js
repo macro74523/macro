@@ -13,10 +13,10 @@ const Tags = props => {
           return (
             <li
               key={tag.id}
-              className={`mr-3 font-medium border whitespace-nowrap dark:text-gray-300 ${
+              className={`mr-3 font-medium border whitespace-nowrap transition-colors duration-200 ${
                 selected
-                  ? 'text-white bg-black border-black dark:bg-gray-600 dark:border-gray-600'
-                  : 'bg-gray-100 border-gray-100 text-gray-400 dark:bg-night dark:border-gray-800'
+                  ? 'text-white bg-black border-black dark:bg-gray-600 dark:border-gray-600 hover:bg-violet-500 hover:border-violet-500 hover:text-white dark:hover:bg-violet-500 dark:hover:border-violet-500'
+                  : 'bg-gray-100 border-gray-100 text-gray-500 dark:bg-night dark:border-gray-800 dark:text-gray-300 hover:bg-violet-500 hover:border-violet-500 hover:text-white dark:hover:bg-violet-500/20 dark:hover:border-violet-500/40'
               }`}
             >
               <SmartLink

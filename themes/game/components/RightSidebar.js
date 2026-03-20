@@ -50,16 +50,16 @@ function AboutCard({ siteInfo }) {
         </div>
       </div>
       <div className='flex gap-2 mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800'>
-        <a href='#' className='flex-1 text-center py-2 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-500 text-xs hover:text-violet-500 dark:hover:text-violet-400 transition-colors'>
+        <a href='#' className='flex-1 text-center py-2 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-500 text-xs hover:text-violet-500 dark:hover:text-violet-400 hover:bg-violet-500/10 dark:hover:bg-violet-500/20 transition-colors'>
           <i className='fab fa-github'></i>
         </a>
-        <a href='#' className='flex-1 text-center py-2 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-500 text-xs hover:text-violet-500 dark:hover:text-violet-400 transition-colors'>
+        <a href='#' className='flex-1 text-center py-2 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-500 text-xs hover:text-violet-500 dark:hover:text-violet-400 hover:bg-violet-500/10 dark:hover:bg-violet-500/20 transition-colors'>
           <i className='fab fa-twitter'></i>
         </a>
-        <a href='#' className='flex-1 text-center py-2 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-500 text-xs hover:text-violet-500 dark:hover:text-violet-400 transition-colors'>
+        <a href='#' className='flex-1 text-center py-2 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-500 text-xs hover:text-violet-500 dark:hover:text-violet-400 hover:bg-violet-500/10 dark:hover:bg-violet-500/20 transition-colors'>
           <i className='fab fa-weibo'></i>
         </a>
-        <a href='#' className='flex-1 text-center py-2 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-500 text-xs hover:text-violet-500 dark:hover:text-violet-400 transition-colors'>
+        <a href='#' className='flex-1 text-center py-2 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-500 text-xs hover:text-violet-500 dark:hover:text-violet-400 hover:bg-violet-500/10 dark:hover:bg-violet-500/20 transition-colors'>
           <i className='fas fa-envelope'></i>
         </a>
       </div>
@@ -145,7 +145,7 @@ function AnnouncementCard({ notice }) {
   return (
     <div className='pix-card p-5'>
       <h4 className='text-sm font-medium text-zinc-800 dark:text-zinc-100 mb-4 flex items-center gap-2'>
-        <i className='fas fa-bullhorn text-amber-400'></i>
+        <i className='fas fa-bullhorn text-violet-500'></i>
         公告
       </h4>
       <div className='text-sm text-zinc-600 dark:text-zinc-400 prose dark:prose-invert max-w-none'>

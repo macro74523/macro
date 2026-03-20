@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { deepClone } from '@/lib/utils'
 import SmartLink from '@/components/SmartLink'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 /**
  * 游戏列表- 关联游戏，在详情页展示
@@ -41,18 +41,37 @@ export const GameListNormal = ({ games, maxCount = 18 }) => {
 const GameItem = ({ item }) => {
   const { title } = item
   const img = item.pageCoverThumbnail
-  const [showType, setShowType] = useState('img') // img or video
   const video = item?.ext?.video
+  const [isHovered, setIsHovered] = useState(false)
+  const videoRef = useRef(null)
+  const hasVideo = Boolean(video)
+  const shouldShowVideo = isHovered && hasVideo
+
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+
+    if (shouldShowVideo) {
+      // Hover触发后尝试播放；某些浏览器策略需要 muted/用户交互才能成功
+      el.play().catch(() => {})
+    } else {
+      el.pause()
+      // 回到开头避免再次 hover 时“从中间开始”的观感问题
+      try {
+        el.currentTime = 0
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [shouldShowVideo, video])
 
   return (
     <SmartLink
       href={`${item?.href}`}
-      onMouseOver={() => {
-        setShowType('video')
-      }}
-      onMouseOut={() => {
-        setShowType('img')
-      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsHovered(true)}
+      onBlur={() => setIsHovered(false)}
       title={title}
       className={`card-single h-44 w-44 relative shadow-lg hover:shadow-2xl rounded-xl overflow-hidden flex justify-center items-center 
                 group hover:border-purple-400 border-2 border-transparent transition-all duration-300`}>
@@ -63,17 +82,23 @@ const GameItem = ({ item }) => {
         <div className='h-full w-full absolute bg-gradient-to-b from-transparent to-black'></div>
       </div>
 
-      {showType === 'video' && (
+      {video && (
         <video
-          className='z-10 object-cover w-auto h-44 absolute overflow-hidden'
-          loop='true'
-          autoPlay
-          preload='none'>
+          ref={videoRef}
+          className={`z-10 object-cover w-auto h-44 absolute overflow-hidden transition-opacity duration-300 ${
+            shouldShowVideo ? 'opacity-100' : 'opacity-0'
+          }`}
+          loop
+          muted
+          playsInline
+          preload='metadata'>
           <source src={video} type='video/mp4' />
         </video>
       )}
       <img
-        className='w-full h-full absolute object-cover group-hover:scale-110 duration-300 transition-all'
+        className={`w-full h-full absolute object-cover group-hover:scale-110 duration-300 transition-all transition-opacity ${
+          shouldShowVideo ? 'opacity-0' : 'opacity-100'
+        }`}
         src={img}
         alt={title}
       />

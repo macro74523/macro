@@ -19,7 +19,6 @@ import BlogPostBar from './components/BlogPostBar'
 import { Footer } from './components/Footer'
 import GameEmbed from './components/GameEmbed'
 import { GameListIndexCombine } from './components/GameListIndexCombine'
-import { GameListRelate } from './components/GameListRealate'
 import { GameListRecent } from './components/GameListRecent'
 import Header from './components/Header'
 import { MenuList } from './components/MenuList'
@@ -214,10 +213,8 @@ const LayoutArchive = props => {
 
 const LayoutSlug = props => {
   const { setRecentGames } = useGameGlobal()
-  const { post, siteInfo, allNavPages, recommendPosts, lock, validPassword } =
-    props
+  const { post, siteInfo, allNavPages, lock, validPassword } = props
 
-  const relateGames = recommendPosts
   const randomGames = shuffleArray(deepClone(allNavPages))
 
   initialPWA(post, siteInfo)
@@ -250,12 +247,8 @@ const LayoutSlug = props => {
               <GameEmbed post={post} siteInfo={siteInfo} />
 
               <div className='game-info py-2 mt-14 md:mt-0'>
-                <div className='w-full mb-4'>
-                  <GameListRelate posts={relateGames} />
-                </div>
-
                 {post && (
-                  <div className='pix-card p-4 mb-4'>
+                  <div className='pix-card p-0 sm:p-4 mb-0 sm:mb-4'>
                     <PostInfo post={post} />
                     <NotionPage post={post} />
                     <AdSlot />

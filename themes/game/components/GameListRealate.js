@@ -21,7 +21,7 @@ export const GameListRelate = ({ posts }) => {
   return (
     <div className='mb-4'>
       <h3 className='text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-3 flex items-center gap-1.5'>
-        <i className='fas fa-lightbulb text-amber-500 text-xs'></i>
+        <i className='fas fa-lightbulb text-violet-500 text-xs'></i>
         相关推荐
       </h3>
       <div className='w-full overflow-x-auto scrollbar-hide'>

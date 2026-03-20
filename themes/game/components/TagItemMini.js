@@ -5,7 +5,11 @@ const TagItemMini = ({ tag, selected = false }) => {
     <SmartLink
       key={tag}
       href={selected ? '/' : `/tag/${encodeURIComponent(tag.name)}`}
-      className={` rounded hover:text-white hover:bg-green-500 text-black dark:text-white dark:bg-gray-800 py-0.5 px-1 `}
+      className={`rounded px-1.5 py-0.5 text-xs font-medium border transition-colors duration-200 ${
+        selected
+          ? 'bg-violet-500 text-white border-violet-500 dark:bg-violet-500/90 dark:border-violet-400'
+          : 'bg-gray-100 text-gray-700 border-transparent hover:bg-violet-500 hover:text-white dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-violet-500/20'
+      }`}
       passHref>
       {/* # {tag.name} */}
       <span className='flex flex-nowrap cursor-pointer'>

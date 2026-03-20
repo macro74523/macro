@@ -94,7 +94,7 @@ export default function GameEmbed({ post, siteInfo }) {
 
   return (
     <div
-      className={`${originUrl ? '' : 'hidden'} bg-black w-full xl:h-[calc(100vh-8rem)] h-screen rounded-md relative`}>
+      className={`${originUrl ? '' : 'hidden'} bg-black w-full xl:h-[calc(100vh-8rem)] h-screen rounded-none md:rounded-md relative`}>
       {/* 移动端返回主页按钮 */}
       <Draggable stick='left'>
         <div
@@ -102,9 +102,10 @@ export default function GameEmbed({ post, siteInfo }) {
           className='text-white fixed xl:hidden group space-x-1 flex items-center z-20 pr-3 pl-1 bg-[#202030] rounded-r-2xl  shadow-lg '>
           <SmartLink
             href='/'
-            className='px-1 py-3 hover:scale-125 duration-200 transition-all'
+            className='flex items-center gap-1 px-2 py-3 hover:scale-125 duration-200 transition-all'
             passHref>
             <i className='fas fa-chevron-left' />
+            <span className='text-xs font-medium whitespace-nowrap'>主页</span>
           </SmartLink>{' '}
           <span
             className='font-serif px-1'
