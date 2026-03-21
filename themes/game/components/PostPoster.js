@@ -3,63 +3,21 @@ import { useRouter } from 'next/router'
 import { useState, useRef, useEffect } from 'react'
 
 const generateQRCode = async (text, size = 100) => {
-  const moduleCount = 25
-  const cellSize = Math.floor(size / moduleCount)
-  const actualSize = cellSize * moduleCount
+  const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&bgcolor=ffffff&color=18181b`
   
-  const canvas = document.createElement('canvas')
-  canvas.width = actualSize
-  canvas.height = actualSize
-  const ctx = canvas.getContext('2d')
-  
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, actualSize, actualSize)
-  
-  const qrMatrix = generateQRMatrix(text)
-  
-  ctx.fillStyle = '#18181b'
-  for (let row = 0; row < moduleCount; row++) {
-    for (let col = 0; col < moduleCount; col++) {
-      if (qrMatrix[row][col]) {
-        ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize)
-      }
-    }
+  try {
+    const response = await fetch(apiUrl)
+    const blob = await response.blob()
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result)
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
+  } catch (error) {
+    console.error('QR Code generation failed:', error)
+    return null
   }
-  
-  return canvas.toDataURL()
-}
-
-const generateQRMatrix = (text) => {
-  const size = 25
-  const matrix = Array(size).fill(null).map(() => Array(size).fill(false))
-  
-  const data = []
-  for (let i = 0; i < text.length; i++) {
-    const code = text.charCodeAt(i)
-    data.push(code)
-  }
-  
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      if (i < 7 && j < 7) {
-        matrix[i][j] = (i === 0 || i === 6 || j === 0 || j === 6 || 
-                       (i >= 2 && i <= 4 && j >= 2 && j <= 4))
-      } else if (i < 7 && j >= size - 7) {
-        const nj = j - (size - 7)
-        matrix[i][j] = (i === 0 || i === 6 || nj === 0 || nj === 6 || 
-                       (i >= 2 && i <= 4 && nj >= 2 && nj <= 4))
-      } else if (i >= size - 7 && j < 7) {
-        const ni = i - (size - 7)
-        matrix[i][j] = (ni === 0 || ni === 6 || j === 0 || j === 6 || 
-                       (ni >= 2 && ni <= 4 && j >= 2 && j <= 4))
-      } else {
-        const dataIndex = (i * size + j) % data.length
-        matrix[i][j] = data[dataIndex] % 2 === 1
-      }
-    }
-  }
-  
-  return matrix
 }
 
 export default function PostPoster({ post }) {
@@ -197,14 +155,24 @@ export default function PostPoster({ post }) {
       const qrY = height - qrSize - 50
       
       const qrDataUrl = await generateQRCode(shareUrl, qrSize)
-      const qrImg = new Image()
-      await new Promise((resolve, reject) => {
-        qrImg.onload = resolve
-        qrImg.onerror = reject
-        qrImg.src = qrDataUrl
-      })
       
-      ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
+      if (qrDataUrl) {
+        const qrImg = new Image()
+        await new Promise((resolve, reject) => {
+          qrImg.onload = resolve
+          qrImg.onerror = reject
+          qrImg.src = qrDataUrl
+        })
+        
+        ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
+      } else {
+        ctx.fillStyle = '#f4f4f5'
+        ctx.fillRect(qrX, qrY, qrSize, qrSize)
+        ctx.fillStyle = '#a1a1aa'
+        ctx.font = '10px sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('二维码', qrX + qrSize / 2, qrY + qrSize / 2)
+      }
       
       ctx.fillStyle = '#71717a'
       ctx.font = '12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
