@@ -23,7 +23,7 @@ import Header from './components/Header'
 import { MenuList } from './components/MenuList'
 import { ArticleLock } from './components/ArticleLock'
 import PostInfo from './components/PostInfo'
-import ShareBar from './components/ShareBar'
+import PostPoster from './components/PostPoster'
 import RightSidebar from './components/RightSidebar'
 import PostSidebar from './components/PostSidebar'
 import SearchModal from './components/SearchModal'
@@ -276,7 +276,7 @@ const LayoutSlug = props => {
                     <PostInfo post={post} />
                     <NotionPage post={post} />
                     <AdSlot />
-                    <ShareBar post={post} />
+                    <PostPoster post={post} />
                     <Comment frontMatter={post} />
                   </div>
                 )}

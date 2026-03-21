@@ -3,6 +3,7 @@ import { useGlobal } from '@/lib/global'
 import { useGameGlobal } from '..'
 import CONFIG from '../config'
 import { MenuItemDrop } from './MenuItemDrop'
+import OnlineUsers from './OnlineUsers'
 
 export const MenuList = props => {
   const { setSideBarVisible } = useGameGlobal()
@@ -65,6 +66,9 @@ export const MenuList = props => {
           <h5 className='text-lg font-bold text-zinc-800 dark:text-zinc-100'>
             {siteInfo?.title || '博主'}
           </h5>
+          <div className='mt-2'>
+            <OnlineUsers />
+          </div>
         </div>
       </div>
 
