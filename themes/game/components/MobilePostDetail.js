@@ -72,6 +72,12 @@ export default function MobilePostDetail({ post, prevPost, nextPost }) {
       if (!isDark) {
         setShowDarkModeTip(true)
         localStorage.setItem('dark_mode_tip_shown', 'true')
+        
+        const timer = setTimeout(() => {
+          setShowDarkModeTip(false)
+        }, 3000)
+        
+        return () => clearTimeout(timer)
       }
     }
   }, [])

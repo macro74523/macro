@@ -8,7 +8,7 @@ export const Footer = props => {
     parseInt(since) < currentYear ? since + '-' + currentYear : currentYear
 
   return (
-    <footer className='pix-card p-5 text-center'>
+    <footer className='pix-card p-5 text-center pb-20 xl:pb-5'>
       <div className='text-sm text-zinc-400 dark:text-zinc-500 space-y-1'>
         <p>
           © {copyrightDate} {siteConfig('TITLE')}

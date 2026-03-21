@@ -38,4 +38,5 @@ const DarkModeButton = props => {
     </button>
   )
 }
+
 export default DarkModeButton
