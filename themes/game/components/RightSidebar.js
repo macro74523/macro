@@ -2,6 +2,7 @@ import { siteConfig } from '@/lib/config'
 import SmartLink from '@/components/SmartLink'
 import dynamic from 'next/dynamic'
 import DarkModeButton from './DarkModeButton'
+import { BusuanziStats } from './BusuanziCounter'
 
 const NotionPage = dynamic(() => import('@/components/NotionPage'))
 
@@ -37,7 +38,7 @@ function StatsCard(props) {
       <h4 className='text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-4'>
         站点统计
       </h4>
-      <div className='grid grid-cols-3 gap-3 text-center'>
+      <div className='grid grid-cols-3 gap-3 text-center mb-4'>
         {stats.map((stat, index) => (
           <div key={index} className='py-1'>
             <div className='text-lg font-bold pix-gradient-text'>{stat.value}</div>
@@ -45,6 +46,7 @@ function StatsCard(props) {
           </div>
         ))}
       </div>
+      <BusuanziStats />
     </div>
   )
 }
