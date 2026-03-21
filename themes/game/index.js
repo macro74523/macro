@@ -1,8 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import Comment from '@/components/Comment'
 import { AdSlot } from '@/components/GoogleAdsense'
 import replaceSearchResult from '@/components/Mark'
-import NotionPage from '@/components/NotionPage'
 import { PWA as initialPWA } from '@/components/PWA'
 import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
@@ -10,27 +8,33 @@ import { loadWowJS } from '@/lib/plugins/wow'
 import { deepClone, isBrowser, shuffleArray } from '@/lib/utils'
 import SmartLink from '@/components/SmartLink'
 import { useRouter } from 'next/router'
-import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react'
 import BlogArchiveItem from './components/BlogArchiveItem'
 import { BlogListPage } from './components/BlogListPage'
 import { BlogListScroll } from './components/BlogListScroll'
 import BlogPostBar from './components/BlogPostBar'
 import { Footer } from './components/Footer'
-import GameEmbed from './components/GameEmbed'
-import { GameListIndexCombine } from './components/GameListIndexCombine'
 import { GameListRecent } from './components/GameListRecent'
 import Header from './components/Header'
 import { MenuList } from './components/MenuList'
 import { ArticleLock } from './components/ArticleLock'
 import PostInfo from './components/PostInfo'
-import PostPoster from './components/PostPoster'
+import MobilePostDetail from './components/MobilePostDetail'
 import RightSidebar from './components/RightSidebar'
 import PostSidebar from './components/PostSidebar'
-import SearchModal from './components/SearchModal'
 import CategoryTabs from './components/CategoryTabs'
 import BackToTop from './components/BackToTop'
+import MobileTocButton from './components/MobileTocButton'
 import CONFIG from './config'
 import { Style } from './style'
+
+const Comment = dynamic(() => import('@/components/Comment'), { ssr: false })
+const NotionPage = dynamic(() => import('@/components/NotionPage'))
+const GameEmbed = dynamic(() => import('./components/GameEmbed'))
+const GameListIndexCombine = dynamic(() => import('./components/GameListIndexCombine').then(mod => ({ default: mod.GameListIndexCombine })))
+const PostPoster = dynamic(() => import('./components/PostPoster'))
+const SearchModal = dynamic(() => import('./components/SearchModal'), { ssr: false })
 
 const ThemeGlobalGame = createContext()
 export const useGameGlobal = () => useContext(ThemeGlobalGame)
@@ -62,9 +66,23 @@ const LayoutBase = props => {
   )
   const [recentGames, setRecentGames] = useState([])
   const [sideBarVisible, setSideBarVisible] = useState(false)
+  const { updateDarkMode } = useGlobal()
 
   useEffect(() => {
     loadWowJS()
+  }, [])
+
+  useEffect(() => {
+    const defaultAppearance = siteConfig('APPEARANCE', 'dark', CONFIG)
+    const savedDarkMode = isBrowser && localStorage.getItem('darkMode')
+    
+    if (defaultAppearance === 'dark' && savedDarkMode === null) {
+      updateDarkMode(true)
+      if (isBrowser) {
+        document.getElementsByTagName('html')[0].classList.remove('light')
+        document.getElementsByTagName('html')[0].classList.add('dark')
+      }
+    }
   }, [])
 
   return (
@@ -91,7 +109,7 @@ const LayoutBase = props => {
           <div className='bg-white dark:bg-zinc-900 lg:rounded-xl shadow-sm flex w-full'>
             <aside className='w-[180px] hidden lg:block flex-shrink-0 border-r border-zinc-100 dark:border-zinc-800 bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-900 dark:to-zinc-900'>
               <div className='sticky top-8 p-4'>
-                <MenuList {...props} />
+                <MenuList {...props} showSearch={!post} />
               </div>
             </aside>
 
@@ -117,7 +135,7 @@ const LayoutBase = props => {
           </div>
         </div>
 
-        <SearchModal siteInfo={siteInfo} {...props} />
+        {!post && <SearchModal siteInfo={siteInfo} {...props} />}
       </div>
     </ThemeGlobalGame.Provider>
   )
@@ -234,9 +252,22 @@ const LayoutArchive = props => {
 
 const LayoutSlug = props => {
   const { setRecentGames } = useGameGlobal()
-  const { post, siteInfo, allNavPages, lock, validPassword } = props
+  const { post, siteInfo, allNavPages, lock, validPassword, posts } = props
 
   const randomGames = shuffleArray(deepClone(allNavPages))
+
+  const getPrevNextPosts = useCallback(() => {
+    if (!posts || !post) return { prevPost: null, nextPost: null }
+    
+    const currentIndex = posts.findIndex(p => p.id === post.id || p.slug === post.slug)
+    
+    return {
+      prevPost: currentIndex > 0 ? posts[currentIndex - 1] : null,
+      nextPost: currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null
+    }
+  }, [posts, post])
+
+  const { prevPost, nextPost } = getPrevNextPosts()
 
   initialPWA(post, siteInfo)
 
@@ -264,8 +295,19 @@ const LayoutSlug = props => {
       {!lock && post && (
         <div id='article-wrapper'>
           <div className='lg:hidden mb-4'>
-            <Header siteInfo={siteInfo} />
+            <Header siteInfo={siteInfo} showSearch={false} />
           </div>
+          
+          <MobilePostDetail 
+            post={post} 
+            prevPost={prevPost}
+            nextPost={nextPost}
+          />
+          
+          <div className='hidden xl:block'>
+            <PostInfo post={post} />
+          </div>
+          
           <div className='game-detail-wrapper w-full grow flex'>
             <div className={`w-full`}>
               <GameEmbed post={post} siteInfo={siteInfo} />
@@ -273,7 +315,6 @@ const LayoutSlug = props => {
               <div className='game-info py-2 mt-14 md:mt-0'>
                 {post && (
                   <div className='mb-4'>
-                    <PostInfo post={post} />
                     <NotionPage post={post} />
                     <AdSlot />
                     <PostPoster post={post} />
@@ -288,6 +329,7 @@ const LayoutSlug = props => {
         </div>
       )}
       <BackToTop />
+      <MobileTocButton toc={post?.toc || []} />
     </>
   )
 }

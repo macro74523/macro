@@ -1,26 +1,48 @@
 import { siteConfig } from '@/lib/config'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 export function BusuanziStats({ compact = false }) {
   const [sitePv, setSitePv] = useState('--')
   const [siteUv, setSiteUv] = useState('--')
+  const hasLoaded = useRef(false)
   
   const enabled = siteConfig('ANALYTICS_BUSUANZI_ENABLE')
 
   useEffect(() => {
     if (!enabled) return
     
+    let checkCount = 0
+    const maxChecks = 20
+    
     const checkBusuanzi = setInterval(() => {
+      if (hasLoaded.current) {
+        clearInterval(checkBusuanzi)
+        return
+      }
+      
+      checkCount++
       const pvEls = document.getElementsByClassName('busuanzi_value_site_pv')
       const uvEls = document.getElementsByClassName('busuanzi_value_site_uv')
       
-      if (pvEls.length > 0 && pvEls[0].textContent && pvEls[0].textContent !== '--') {
+      const pvLoaded = pvEls.length > 0 && pvEls[0].textContent && pvEls[0].textContent !== '--'
+      const uvLoaded = uvEls.length > 0 && uvEls[0].textContent && uvEls[0].textContent !== '--'
+      
+      if (pvLoaded) {
         setSitePv(pvEls[0].textContent)
       }
-      if (uvEls.length > 0 && uvEls[0].textContent && uvEls[0].textContent !== '--') {
+      if (uvLoaded) {
         setSiteUv(uvEls[0].textContent)
       }
-    }, 500)
+      
+      if (pvLoaded && uvLoaded) {
+        hasLoaded.current = true
+        clearInterval(checkBusuanzi)
+      }
+      
+      if (checkCount >= maxChecks) {
+        clearInterval(checkBusuanzi)
+      }
+    }, 300)
 
     return () => clearInterval(checkBusuanzi)
   }, [enabled])

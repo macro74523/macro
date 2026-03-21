@@ -79,12 +79,22 @@ module.exports = {
         2: '0px 5px 12px 0px rgba(0, 0, 0, 0.10)'
       },
       animation: {
-        shimmer: 'shimmer 1.5s infinite'
+        shimmer: 'shimmer 1.5s infinite',
+        slideUp: 'slideUp 0.3s ease-out',
+        fadeIn: 'fadeIn 0.2s ease-out'
       },
       keyframes: {
         shimmer: {
           '0%': { backgroundPosition: '200% 0' },
           '100%': { backgroundPosition: '-200% 0' }
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(100%)' },
+          '100%': { transform: 'translateY(0)' }
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' }
         }
       }
     }

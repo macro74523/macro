@@ -48,12 +48,11 @@ const ArticleCard = ({ post, index }) => {
                     style={{ backgroundSize: '200% 100%' }} />
                 </div>
               )}
-              <div className={`absolute inset-0 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`absolute inset-0 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}>
                 <LazyImage
                   src={cover}
                   alt={title}
                   className={`w-full h-full object-cover transition-all duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
-                  priority
                   fill='full'
                   onLoad={() => setImageLoaded(true)}
                   onError={handleImageError}

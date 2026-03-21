@@ -4,7 +4,7 @@ import { useGameGlobal } from '..'
 import CONFIG from '../config'
 import { MenuItemDrop } from './MenuItemDrop'
 
-export const MenuList = props => {
+export const MenuList = ({ showSearch = true, ...props }) => {
   const { setSideBarVisible } = useGameGlobal()
   const { customNav, customMenu, siteInfo } = props
   const { locale } = useGlobal()
@@ -51,33 +51,37 @@ export const MenuList = props => {
 
   return (
     <nav className='space-y-1'>
-      <div className='flex flex-col items-center mb-4 pb-4 border-b border-zinc-100 dark:border-zinc-800'>
-        <div className='w-14 h-14 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 mb-3'>
+      <div className='flex flex-col items-center mb-5 pb-5 border-b border-zinc-100 dark:border-zinc-800'>
+        <div className='w-16 h-16 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 mb-3 shadow-sm'>
           {siteInfo?.icon ? (
             <img src={siteInfo.icon} alt='avatar' className='w-full h-full object-cover' />
           ) : (
             <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
-              <i className='fas fa-user text-white'></i>
+              <i className='fas fa-user text-white text-lg'></i>
             </div>
           )}
         </div>
         <div className='text-center'>
-          <h5 className='text-lg font-bold text-zinc-800 dark:text-zinc-100'>
+          <h5 className='text-lg font-bold text-zinc-800 dark:text-zinc-100 tracking-tight'>
             {siteInfo?.title || '博主'}
           </h5>
         </div>
       </div>
 
-      <button
-        className='w-full flex items-center gap-2.5 px-3 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200 text-sm group'
-        onClick={() => {
-          setSideBarVisible(true)
-        }}>
-        <i className='fas fa-search w-4 text-center text-zinc-300 dark:text-zinc-600 group-hover:text-violet-500 transition-colors'></i>
-        <span className='group-hover:text-zinc-800 dark:group-hover:text-zinc-100 transition-colors'>搜索</span>
-      </button>
+      {showSearch && (
+        <button
+          className='w-full flex items-center gap-3 px-3 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200 text-sm group rounded-lg'
+          onClick={() => {
+            setSideBarVisible(true)
+          }}>
+          <span className='w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-violet-100 dark:group-hover:bg-violet-500/20 transition-colors'>
+            <i className='fas fa-search text-xs text-zinc-400 dark:text-zinc-500 group-hover:text-violet-500 transition-colors'></i>
+          </span>
+          <span className='group-hover:text-zinc-800 dark:group-hover:text-zinc-100 transition-colors'>搜索</span>
+        </button>
+      )}
 
-      <div className='pt-3 mt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-0.5'>
+      <div className={`${showSearch ? 'pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800' : ''} space-y-1`}>
         {links?.map(
           (link, index) =>
             link && link.show && <MenuItemDrop key={index} link={link} />

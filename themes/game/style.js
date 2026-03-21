@@ -84,6 +84,19 @@ const Style = () => {
         animation: fadeIn 0.3s ease-out forwards;
       }
 
+      @keyframes slideUp {
+        from {
+          transform: translateY(100%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+
+      .animate-slide-up {
+        animation: slideUp 0.3s ease-out forwards;
+      }
+
       .pix-card {
         background: #ffffff;
         border-radius: 0;
