@@ -53,6 +53,7 @@ const GameItem = ({ item }) => {
   const { recentGames, setRecentGames } = useGameGlobal()
   const { title } = item || {}
   const [isHovered, setIsHovered] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   const removeRecent = e => {
     e.stopPropagation()
@@ -80,13 +81,14 @@ const GameItem = ({ item }) => {
       onMouseLeave={() => setIsHovered(false)}
       className='relative flex-shrink-0 w-20 rounded-md overflow-hidden cursor-pointer group bg-zinc-100 dark:bg-zinc-800'>
       <div className='aspect-[4/3] overflow-hidden'>
-        {img ? (
+        {img && !imageError ? (
           <LazyImage
             src={img}
             alt={title}
             className={`w-full h-full object-cover transition-transform duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`}
             priority
             fill='full'
+            onError={() => setImageError(true)}
           />
         ) : (
           <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>

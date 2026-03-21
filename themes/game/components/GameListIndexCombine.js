@@ -35,6 +35,7 @@ const GameCard = ({ item }) => {
   const { title } = item
   const img = item.pageCoverThumbnail || item.pageCover
   const [isHovered, setIsHovered] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   return (
     <SmartLink
@@ -43,13 +44,14 @@ const GameCard = ({ item }) => {
       className='relative block w-full aspect-[5/1] rounded-lg overflow-hidden cursor-pointer group bg-zinc-100 dark:bg-zinc-800'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}>
-      {img ? (
+      {img && !imageError ? (
         <LazyImage
           src={img}
           alt={title}
           className={`w-full h-full object-cover object-center transition-transform duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
           priority
           fill='full'
+          onError={() => setImageError(true)}
         />
       ) : (
         <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>

@@ -89,7 +89,7 @@ const LayoutBase = props => {
           id='wrapper'
           className='relative flex justify-center w-full mx-auto gap-0 max-w-[1300px] lg:pt-10 pt-4 lg:px-4 px-0'>
           <div className='bg-white dark:bg-zinc-900 lg:rounded-xl shadow-sm flex w-full'>
-            <aside className='w-[180px] hidden lg:block flex-shrink-0 border-r border-zinc-100 dark:border-zinc-800'>
+            <aside className='w-[180px] hidden lg:block flex-shrink-0 border-r border-zinc-100 dark:border-zinc-800 bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-900 dark:to-zinc-900'>
               <div className='sticky top-8 p-4'>
                 <MenuList {...props} />
               </div>
@@ -345,39 +345,44 @@ const LayoutCategoryIndex = props => {
       </div>
       
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-        {categoryOptions?.map((category, index) => {
-          const cover = getCategoryCover(category.name)
-          
-          return (
-            <SmartLink
-              key={category.name}
-              href={`/category/${category.name}`}
-              className='group relative block aspect-[4/3] rounded-xl overflow-hidden cursor-pointer bg-zinc-100 dark:bg-zinc-800'>
-              {cover ? (
-                <img
-                  src={cover}
-                  alt={category.name}
-                  className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
-                />
-              ) : (
-                <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
-                  <i className='fas fa-folder text-white/30 text-4xl'></i>
-                </div>
-              )}
-              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
-              <div className='absolute bottom-0 left-0 right-0 p-4'>
-                <h3 className='text-lg font-bold text-white mb-1 truncate'>
-                  {category.name}
-                </h3>
-                <p className='text-sm text-white/80'>
-                  {category.count} 篇文章
-                </p>
-              </div>
-            </SmartLink>
-          )
-        })}
+        {categoryOptions?.map((category, index) => (
+          <CategoryCard key={category.name} category={category} getCategoryCover={getCategoryCover} />
+        ))}
       </div>
     </>
+  )
+}
+
+const CategoryCard = ({ category, getCategoryCover }) => {
+  const cover = getCategoryCover(category.name)
+  const [imageError, setImageError] = useState(false)
+
+  return (
+    <SmartLink
+      href={`/category/${category.name}`}
+      className='group relative block aspect-[4/3] rounded-xl overflow-hidden cursor-pointer bg-zinc-100 dark:bg-zinc-800'>
+      {cover && !imageError ? (
+        <img
+          src={cover}
+          alt={category.name}
+          className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
+          <i className='fas fa-folder text-white/30 text-4xl'></i>
+        </div>
+      )}
+      <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
+      <div className='absolute bottom-0 left-0 right-0 p-4'>
+        <h3 className='text-lg font-bold text-white mb-1 truncate'>
+          {category.name}
+        </h3>
+        <p className='text-sm text-white/80'>
+          {category.count} 篇文章
+        </p>
+      </div>
+    </SmartLink>
   )
 }
 

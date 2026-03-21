@@ -19,9 +19,15 @@ const ArticleCard = ({ post, index }) => {
   const cover = post.pageCoverThumbnail || post.pageCover
   const [isHovered, setIsHovered] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   const heights = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-[1/1]', 'aspect-[4/6]', 'aspect-[3/5]']
   const randomAspect = heights[index % heights.length]
+
+  const handleImageError = () => {
+    setImageError(true)
+    setImageLoaded(true)
+  }
 
   return (
     <article className='break-inside-avoid bg-white dark:bg-zinc-900 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group'>
@@ -33,7 +39,7 @@ const ArticleCard = ({ post, index }) => {
         onMouseLeave={() => setIsHovered(false)}>
         
         <div className={`relative ${randomAspect} overflow-hidden bg-zinc-100 dark:bg-zinc-800`}>
-          {cover ? (
+          {cover && !imageError ? (
             <>
               {!imageLoaded && (
                 <div className='absolute inset-0 overflow-hidden'>
@@ -49,6 +55,7 @@ const ArticleCard = ({ post, index }) => {
                   priority
                   fill='full'
                   onLoad={() => setImageLoaded(true)}
+                  onError={handleImageError}
                 />
               </div>
             </>

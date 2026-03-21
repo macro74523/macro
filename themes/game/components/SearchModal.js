@@ -169,6 +169,7 @@ function SearchResultItem({ item, onClick }) {
   const cover = item.pageCoverThumbnail || item.pageCover
   const date = item.publishDay || item.publishDate
   const category = item.category
+  const [imageError, setImageError] = useState(false)
 
   return (
     <SmartLink
@@ -176,13 +177,14 @@ function SearchResultItem({ item, onClick }) {
       onClick={onClick}
       className='flex gap-4 p-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group'>
       <div className='flex-shrink-0 w-20 h-20 overflow-hidden bg-zinc-100 dark:bg-zinc-800'>
-        {cover ? (
+        {cover && !imageError ? (
           <LazyImage
             src={cover}
             alt={title}
             className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
             priority
             fill='full'
+            onError={() => setImageError(true)}
           />
         ) : (
           <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>

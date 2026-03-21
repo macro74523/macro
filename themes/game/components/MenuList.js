@@ -62,13 +62,9 @@ export const MenuList = props => {
           )}
         </div>
         <div className='text-center'>
-          <h5 className='text-sm font-medium text-zinc-800 dark:text-zinc-100'>
+          <h5 className='text-lg font-bold text-zinc-800 dark:text-zinc-100'>
             {siteInfo?.title || '博主'}
           </h5>
-          <p className='text-xs text-zinc-400 dark:text-zinc-500 flex items-center justify-center gap-1 mt-1'>
-            <i className='fas fa-map-marker-alt text-[10px]'></i>
-            {siteConfig('LOCATION') || '中国'}
-          </p>
         </div>
       </div>
 
