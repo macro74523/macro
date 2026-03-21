@@ -1,7 +1,22 @@
 import { siteConfig } from '@/lib/config'
 import { useState, useEffect } from 'react'
 
+const LIKES_STORAGE_KEY = 'article_likes_data'
 const LIKED_STORAGE_KEY = 'waline_liked_articles'
+
+const getLikesData = () => {
+  if (typeof window === 'undefined') return {}
+  try {
+    return JSON.parse(localStorage.getItem(LIKES_STORAGE_KEY) || '{}')
+  } catch {
+    return {}
+  }
+}
+
+const saveLikesData = (data) => {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(LIKES_STORAGE_KEY, JSON.stringify(data))
+}
 
 const getLikedArticles = () => {
   if (typeof window === 'undefined') return []
@@ -21,80 +36,68 @@ export default function LikeButton({ post }) {
   const [likes, setLikes] = useState(0)
   const [isLiked, setIsLiked] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   
-  const serverURL = siteConfig('COMMENT_WALINE_SERVER_URL')
-  const articlePath = post?.href
+  const articleKey = post?.id || post?.slug || post?.href
 
   useEffect(() => {
-    if (!articlePath) return
+    if (!articleKey) return
+    
+    const likesData = getLikesData()
+    setLikes(likesData[articleKey] || 0)
     
     const likedArticles = getLikedArticles()
-    setIsLiked(likedArticles.includes(articlePath))
-    
-    if (serverURL) {
-      fetchLikes()
-    }
-  }, [articlePath, serverURL])
+    setIsLiked(likedArticles.includes(articleKey))
+  }, [articleKey])
 
-  const fetchLikes = async () => {
-    if (!serverURL || !articlePath) return
-    
-    try {
-      const response = await fetch(
-        `${serverURL}/api/article?path=${encodeURIComponent(articlePath)}`,
-        { method: 'GET' }
-      )
-      const data = await response.json()
-      if (data && data.data && data.data.length > 0) {
-        const articleData = data.data[0]
-        setLikes(articleData.like || 0)
-      }
-    } catch (error) {
-      console.error('Failed to fetch likes:', error)
-    }
-  }
-
-  const handleLike = async (e) => {
+  const handleLike = (e) => {
     e.preventDefault()
     e.stopPropagation()
     
-    if (isLiked || isLoading) return
+    if (isLiked) return
     
     setIsAnimating(true)
     setTimeout(() => setIsAnimating(false), 500)
     
+    const likesData = getLikesData()
+    const newCount = (likesData[articleKey] || 0) + 1
+    likesData[articleKey] = newCount
+    saveLikesData(likesData)
+    setLikes(newCount)
+    
     const likedArticles = getLikedArticles()
-    if (!likedArticles.includes(articlePath)) {
-      likedArticles.push(articlePath)
+    if (!likedArticles.includes(articleKey)) {
+      likedArticles.push(articleKey)
       saveLikedArticles(likedArticles)
     }
     setIsLiked(true)
-    setLikes(prev => prev + 1)
 
-    if (serverURL && articlePath) {
-      setIsLoading(true)
-      try {
-        await fetch(`${serverURL}/api/like`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            url: articlePath
-          })
+    syncToWaline(articleKey, newCount)
+  }
+
+  const syncToWaline = async (path, count) => {
+    const serverURL = siteConfig('COMMENT_WALINE_SERVER_URL')
+    if (!serverURL || !path) return
+    
+    try {
+      await fetch(`${serverURL}/api/article`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          path: path,
+          like: count
         })
-      } catch (error) {
-        console.error('Failed to sync like to Waline:', error)
-      }
-      setIsLoading(false)
+      })
+    } catch (error) {
+      console.error('Failed to sync like to server:', error)
     }
   }
 
   return (
     <button
       onClick={handleLike}
-      disabled={isLiked || isLoading}
+      disabled={isLiked}
       className={`flex items-center gap-1 text-xs transition-all duration-300 ${
         isLiked 
           ? 'text-red-400 dark:text-red-400 cursor-default' 
