@@ -1,6 +1,7 @@
 import LazyImage from '@/components/LazyImage'
 import SmartLink from '@/components/SmartLink'
 import { useState } from 'react'
+import LikeButton from './LikeButton'
 
 export const ArticleList = ({ posts }) => {
   if (!posts || posts.length === 0) return null
@@ -71,9 +72,7 @@ const ArticleCard = ({ post, index }) => {
             {title}
           </h3>
           <div className='flex items-center justify-end mt-2'>
-            <span className='flex items-center gap-0.5 text-xs text-zinc-300 dark:text-zinc-600'>
-              <i className='far fa-heart text-[10px]'></i>
-            </span>
+            <LikeButton post={post} />
           </div>
         </div>
       </SmartLink>
