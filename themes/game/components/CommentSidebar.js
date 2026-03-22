@@ -1,5 +1,6 @@
 import { siteConfig } from '@/lib/config'
 import { useEffect, useRef, useState } from 'react'
+import PostReaction from './PostReaction'
 import '@waline/client/style'
 
 export default function CommentSidebar({ post, showComment, setShowComment }) {
@@ -59,8 +60,7 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
           <div className='w-9 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full'></div>
         </div>
         
-        <div className='flex items-center justify-between px-4 pb-3 flex-shrink-0'>
-          <span className='font-semibold text-base text-zinc-800 dark:text-zinc-100'>评论</span>
+        <div className='flex items-center justify-end px-4 pb-3 flex-shrink-0'>
           <div className='flex items-center gap-2'>
             <button 
               onClick={() => setIsFullscreen(!isFullscreen)}
@@ -76,6 +76,7 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         </div>
         
         <div className='flex-1 overflow-y-auto overflow-x-hidden relative'>
+          <PostReaction post={post} />
           {serverURL && (
             <div ref={containerRef} className='waline-container' />
           )}

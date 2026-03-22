@@ -319,11 +319,9 @@ const LayoutSlug = props => {
                   <div>
                     <NotionPage post={post} />
                     <MobilePostMeta post={post} />
-                    <div className='hidden xl:block'>
-                      <PostReaction post={post} />
-                    </div>
                     <AdSlot />
                     <div className='hidden xl:block mt-8'>
+                      <PostReaction post={post} />
                       <Comment frontMatter={post} />
                     </div>
                   </div>
