@@ -19,14 +19,11 @@ import { GameListRecent } from './components/GameListRecent'
 import Header from './components/Header'
 import { MenuList } from './components/MenuList'
 import { ArticleLock } from './components/ArticleLock'
-import PostInfo from './components/PostInfo'
-import MobilePostDetail from './components/MobilePostDetail'
 import RightSidebar from './components/RightSidebar'
 import PostSidebar from './components/PostSidebar'
 import CategoryTabs from './components/CategoryTabs'
 import BackToTop from './components/BackToTop'
 import MobilePostMeta from './components/MobilePostMeta'
-import PostReaction from './components/PostReaction'
 import CONFIG from './config'
 import { Style } from './style'
 
@@ -35,6 +32,9 @@ const NotionPage = dynamic(() => import('@/components/NotionPage'))
 const GameEmbed = dynamic(() => import('./components/GameEmbed'))
 const GameListIndexCombine = dynamic(() => import('./components/GameListIndexCombine').then(mod => ({ default: mod.GameListIndexCombine })))
 const SearchModal = dynamic(() => import('./components/SearchModal'), { ssr: false })
+const PostReaction = dynamic(() => import('./components/PostReaction'), { ssr: false })
+const MobilePostDetail = dynamic(() => import('./components/MobilePostDetail'), { ssr: false })
+const PostInfo = dynamic(() => import('./components/PostInfo'), { ssr: false })
 
 const ThemeGlobalGame = createContext()
 export const useGameGlobal = () => useContext(ThemeGlobalGame)
@@ -45,9 +45,7 @@ const LayoutBase = props => {
     children,
     siteInfo,
     tagOptions,
-    currentTag,
     categoryOptions,
-    currentCategory,
     postCount,
     notice,
     post

@@ -1,7 +1,9 @@
 import { siteConfig } from '@/lib/config'
 import { useEffect, useRef, useState } from 'react'
-import PostReaction from './PostReaction'
+import dynamic from 'next/dynamic'
 import '@waline/client/style'
+
+const PostReaction = dynamic(() => import('./PostReaction'), { ssr: false })
 
 export default function CommentSidebar({ post, showComment, setShowComment }) {
   const serverURL = siteConfig('COMMENT_WALINE_SERVER_URL')

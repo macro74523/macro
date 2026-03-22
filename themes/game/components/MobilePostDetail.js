@@ -5,8 +5,10 @@ import NotionIcon from '@/components/NotionIcon'
 import { useRouter } from 'next/router'
 import { isBrowser } from '@/lib/utils'
 import { useGlobal } from '@/lib/global'
-import CommentSidebar from './CommentSidebar'
+import dynamic from 'next/dynamic'
 import { uuidToId } from 'notion-utils'
+
+const CommentSidebar = dynamic(() => import('./CommentSidebar'), { ssr: false })
 
 const generateQRCode = async (text, size = 80) => {
   const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&bgcolor=ffffff&color=18181b`
@@ -355,9 +357,11 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
         </h1>
 
         {serverURL && (
-          <div className='inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100/80 dark:bg-zinc-800/80 text-xs text-zinc-500 dark:text-zinc-400'>
-            <i className='far fa-eye text-[11px]'></i>
-            <span className='waline-pageview-count font-medium' data-path={articlePath}>--</span>
+          <div className='flex justify-end'>
+            <div className='inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100/80 dark:bg-zinc-800/80 text-xs text-zinc-500 dark:text-zinc-400'>
+              <i className='far fa-eye text-[11px]'></i>
+              <span className='waline-pageview-count font-medium' data-path={articlePath}>--</span>
+            </div>
           </div>
         )}
       </div>
