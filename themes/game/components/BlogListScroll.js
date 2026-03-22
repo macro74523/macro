@@ -9,7 +9,14 @@ export const BlogListScroll = props => {
   const { posts } = props
   const { locale, NOTION_CONFIG } = useGlobal()
   const [page, updatePage] = useState(1)
+  const [initialLoading, setInitialLoading] = useState(true)
   const POSTS_PER_PAGE = siteConfig('POSTS_PER_PAGE', null, NOTION_CONFIG)
+
+  useEffect(() => {
+    if (posts && posts.length > 0) {
+      setInitialLoading(false)
+    }
+  }, [posts])
 
   let hasMore = false
   const postsToShow =
@@ -52,7 +59,7 @@ export const BlogListScroll = props => {
   return (
     <>
       <div id='posts-wrapper' ref={targetRef}>
-        <ArticleList posts={postsToShow} />
+        <ArticleList posts={postsToShow} loading={initialLoading} />
       </div>
 
       <div

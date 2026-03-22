@@ -129,6 +129,7 @@ const LayoutBase = props => {
                 categoryOptions={categoryOptions}
                 postCount={postCount}
                 notice={notice}
+                posts={allNavPages}
               />
             )}
           </div>

@@ -2,8 +2,13 @@ import LazyImage from '@/components/LazyImage'
 import SmartLink from '@/components/SmartLink'
 import { useState } from 'react'
 import LikeButton from './LikeButton'
+import ArticleSkeleton from './ArticleSkeleton'
 
-export const ArticleList = ({ posts }) => {
+export const ArticleList = ({ posts, loading = false, skeletonCount = 6 }) => {
+  if (loading) {
+    return <ArticleSkeleton count={skeletonCount} />
+  }
+  
   if (!posts || posts.length === 0) return null
 
   return (

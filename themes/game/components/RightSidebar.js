@@ -3,11 +3,13 @@ import SmartLink from '@/components/SmartLink'
 import dynamic from 'next/dynamic'
 import DarkModeButton from './DarkModeButton'
 import { BusuanziStats } from './BusuanziCounter'
+import PostCalendar from './PostCalendar'
+import RandomPostButton from './RandomPostButton'
 
 const NotionPage = dynamic(() => import('@/components/NotionPage'))
 
 export default function RightSidebar(props) {
-  const { siteInfo, tagOptions, categoryOptions, postCount, notice } = props
+  const { siteInfo, tagOptions, categoryOptions, postCount, notice, posts } = props
 
   const tags = tagOptions?.slice(0, 8) || []
   const categories = categoryOptions?.slice(0, 5) || []
@@ -16,9 +18,11 @@ export default function RightSidebar(props) {
     <aside className='w-[280px] hidden xl:block flex-shrink-0 border-l border-zinc-100 dark:border-zinc-800'>
       <div className='sticky top-8 p-5 space-y-6'>
         <StatsCard {...props} />
+        <PostCalendar posts={posts} />
         <CategoryCard categories={categories} />
         <TagCard tags={tags} />
         {notice?.blockMap && <AnnouncementCard notice={notice} />}
+        <RandomPostButton posts={posts} />
         <ThemeSwitcher />
       </div>
     </aside>

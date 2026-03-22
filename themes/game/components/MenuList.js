@@ -87,6 +87,21 @@ export const MenuList = ({ showSearch = true, ...props }) => {
             link && link.show && <MenuItemDrop key={index} link={link} />
         )}
       </div>
+
+      {siteConfig('ENABLE_RSS') && (
+        <div className='pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800'>
+          <a
+            href='/rss/feed.xml'
+            target='_blank'
+            rel='noreferrer'
+            className='w-full flex items-center gap-3 px-3 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200 text-sm group rounded-lg'>
+            <span className='w-7 h-7 rounded-lg bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center group-hover:bg-orange-200 dark:group-hover:bg-orange-500/30 transition-colors'>
+              <i className='fas fa-rss text-xs text-orange-500 transition-colors'></i>
+            </span>
+            <span className='group-hover:text-zinc-800 dark:group-hover:text-zinc-100 transition-colors'>RSS 订阅</span>
+          </a>
+        </div>
+      )}
     </nav>
   )
 }
