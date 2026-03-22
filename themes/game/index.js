@@ -312,9 +312,9 @@ const LayoutSlug = props => {
             <div className={`w-full`}>
               <GameEmbed post={post} siteInfo={siteInfo} />
 
-              <div className='game-info py-2 mt-14 md:mt-0'>
+              <div className='game-info mt-14 md:mt-0'>
                 {post && (
-                  <div className='mb-4'>
+                  <div>
                     <NotionPage post={post} />
                     <MobilePostMeta post={post} />
                     <AdSlot />

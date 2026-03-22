@@ -9,6 +9,14 @@ const Style = () => {
         background-color: #fafafa;
       }
 
+      #notion-article {
+        padding-top: 0 !important;
+      }
+
+      #notion-article .notion-page-block {
+        padding-top: 0 !important;
+      }
+
       html::-webkit-scrollbar {
         width: 6px;
         height: 6px;

@@ -14,6 +14,7 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
           el: containerRef.current,
           serverURL,
           lang: siteConfig('LANG'),
+          login: 'force',
           reaction: true,
           dark: 'html.dark',
           emoji: [

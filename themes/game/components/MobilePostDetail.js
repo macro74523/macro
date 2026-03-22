@@ -158,8 +158,8 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
     if (window.scrollY === 0 && touchStartY.current > 0) {
       const distance = e.touches[0].clientY - touchStartY.current
       if (distance > 0) {
-        setPullDistance(Math.min(distance, 100))
-        setShowPullTip(distance > 50)
+        setPullDistance(Math.min(distance, 200))
+        setShowPullTip(distance > 100)
       }
     }
   }, [])
@@ -173,7 +173,7 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
   }
 
   const handleTouchEnd = useCallback(() => {
-    if (pullDistance > 80) {
+    if (pullDistance > 150) {
       handleBack()
     }
     setPullDistance(0)
@@ -233,8 +233,8 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
 
       {showPullTip && (
         <div className='fixed top-8 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-white dark:bg-zinc-800 rounded-full shadow-lg text-sm text-zinc-600 dark:text-zinc-300 flex items-center gap-2'>
-          <i className='fas fa-arrow-left text-violet-500'></i>
-          <span>松开返回上一页</span>
+          <i className='fas fa-arrow-up text-violet-500'></i>
+          <span>继续下滑返回</span>
         </div>
       )}
 
@@ -253,13 +253,13 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
       )}
 
       <div className='px-1 pt-14'>
-        <h1 className='font-bold text-2xl text-zinc-800 dark:text-zinc-100 mb-4 leading-snug'>
+        <h1 className='font-bold text-2xl text-zinc-800 dark:text-zinc-100 mb-1 leading-snug'>
           {siteConfig('POST_TITLE_ICON') && <NotionIcon icon={post?.pageIcon} />}
           {post?.title}
         </h1>
 
         {serverURL && (
-          <div className='flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 mb-4'>
+          <div className='flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400'>
             <span className='w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center'>
               <i className='far fa-eye text-[10px] text-zinc-400'></i>
             </span>
@@ -267,12 +267,6 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
             <span>次阅读</span>
           </div>
         )}
-
-        <div className='flex items-center gap-2 my-1'>
-          <div className='flex-1 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-700 to-transparent'></div>
-          <i className='fas fa-feather-alt text-zinc-300 dark:text-zinc-600 text-[10px]'></i>
-          <div className='flex-1 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-700 to-transparent'></div>
-        </div>
       </div>
 
       <div className='fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-100 dark:border-zinc-800 px-4 py-2 safe-area-bottom'>
