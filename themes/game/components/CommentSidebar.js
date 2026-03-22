@@ -76,7 +76,7 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         </div>
         
         <div className='flex-1 overflow-y-auto overflow-x-hidden relative'>
-          <PostReaction post={post} />
+          {post && post?.href && <PostReaction post={post} key={`reaction-${post.href}`} />}
           {serverURL && (
             <div ref={containerRef} className='waline-container' />
           )}

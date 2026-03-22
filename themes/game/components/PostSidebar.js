@@ -35,31 +35,31 @@ export default function PostSidebar({ post }) {
             </h4>
             <div className='space-y-3 text-sm text-zinc-600 dark:text-zinc-400'>
               {post?.publishDay && (
-                <div className='flex items-center gap-3'>
+                <div className='flex items-start gap-3'>
                   <span className='w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0'>
                     <i className='far fa-calendar text-[10px] text-zinc-400'></i>
                   </span>
-                  <span>{post.publishDay}</span>
+                  <span className='leading-6'>{post.publishDay}</span>
                 </div>
               )}
               {post?.category && (
-                <div className='flex items-center gap-3'>
+                <div className='flex items-start gap-3'>
                   <span className='w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0'>
                     <i className='fas fa-folder text-[10px] text-zinc-400'></i>
                   </span>
                   <SmartLink 
                     href={`/category/${post.category}`}
-                    className='hover:text-violet-500 dark:hover:text-violet-400 transition-colors'>
+                    className='hover:text-violet-500 dark:hover:text-violet-400 transition-colors leading-6'>
                     {post.category}
                   </SmartLink>
                 </div>
               )}
               {post?.tags && post.tags.length > 0 && (
                 <div className='flex items-start gap-3'>
-                  <span className='w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0 mt-0.5'>
+                  <span className='w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0'>
                     <i className='fas fa-tags text-[10px] text-zinc-400'></i>
                   </span>
-                  <div className='flex flex-wrap gap-1.5'>
+                  <div className='flex flex-wrap gap-1.5 pt-1'>
                     {post.tags.slice(0, 5).map((tag, index) => (
                       <SmartLink
                         key={index}
@@ -73,10 +73,10 @@ export default function PostSidebar({ post }) {
               )}
               {(post?.wordCount || post?.readTime) && (
                 <div className='flex items-start gap-3'>
-                  <span className='w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0 mt-0.5'>
+                  <span className='w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0'>
                     <i className='fas fa-file-alt text-[10px] text-zinc-400'></i>
                   </span>
-                  <div className='text-xs'>
+                  <div className='text-xs pt-1.5'>
                     <WordCount wordCount={post.wordCount} readTime={post.readTime} />
                   </div>
                 </div>
