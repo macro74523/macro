@@ -355,12 +355,9 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
         </h1>
 
         {serverURL && (
-          <div className='flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400'>
-            <span className='w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center'>
-              <i className='far fa-eye text-[10px] text-zinc-400'></i>
-            </span>
-            <span className='waline-pageview-count' data-path={articlePath}>--</span>
-            <span>次阅读</span>
+          <div className='inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100/80 dark:bg-zinc-800/80 text-xs text-zinc-500 dark:text-zinc-400'>
+            <i className='far fa-eye text-[11px]'></i>
+            <span className='waline-pageview-count font-medium' data-path={articlePath}>--</span>
           </div>
         )}
       </div>

@@ -78,11 +78,6 @@ export default function PostReaction({ post }) {
               <span>加载中...</span>
             </div>
           )}
-          {hasError && (
-            <div className='text-zinc-400 text-sm'>
-              加载失败
-            </div>
-          )}
         </div>
       </div>
 

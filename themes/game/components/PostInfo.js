@@ -50,16 +50,9 @@ export default function PostInfo(props) {
           {post?.title}
         </h1>
         {serverURL && (
-          <div className='flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400 mb-4'>
-            <span className='flex items-center gap-2'>
-              <span className='w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center'>
-                <i className='far fa-eye text-[10px] text-zinc-400'></i>
-              </span>
-              <span className='waline-pageview-count' data-path={articlePath}>
-                --
-              </span>
-              <span>次阅读</span>
-            </span>
+          <div className='inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100/80 dark:bg-zinc-800/80 text-sm text-zinc-500 dark:text-zinc-400 mb-4'>
+            <i className='far fa-eye text-xs'></i>
+            <span className='waline-pageview-count font-medium' data-path={articlePath}>--</span>
           </div>
         )}
       </div>
