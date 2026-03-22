@@ -26,6 +26,7 @@ import PostSidebar from './components/PostSidebar'
 import CategoryTabs from './components/CategoryTabs'
 import BackToTop from './components/BackToTop'
 import MobilePostMeta from './components/MobilePostMeta'
+import PostReaction from './components/PostReaction'
 import CONFIG from './config'
 import { Style } from './style'
 
@@ -318,6 +319,7 @@ const LayoutSlug = props => {
                   <div>
                     <NotionPage post={post} />
                     <MobilePostMeta post={post} />
+                    <PostReaction post={post} />
                     <AdSlot />
                     <div className='hidden xl:block mt-8'>
                       <Comment frontMatter={post} />

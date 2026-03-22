@@ -16,7 +16,7 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
           serverURL,
           lang: siteConfig('LANG'),
           login: 'force',
-          reaction: true,
+          reaction: false,
           dark: 'html.dark',
           emoji: [
             '//npm.elemecdn.com/@waline/emojis@1.1.0/tieba',
@@ -78,10 +78,28 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
           </div>
         </div>
         
-        <div className='flex-1 overflow-y-auto overflow-x-hidden'>
+        <div className='flex-1 overflow-y-auto overflow-x-hidden pb-[120px]'>
           {serverURL && (
             <div ref={containerRef} className='waline-container' />
           )}
+        </div>
+        
+        <div className='absolute bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-3 flex-shrink-0'>
+          <div className='flex items-center gap-2'>
+            <input 
+              type='text' 
+              placeholder='写下你的评论...' 
+              className='flex-1 h-10 px-4 bg-zinc-100 dark:bg-zinc-800 rounded-full text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50'
+              onClick={() => {
+                const editor = document.querySelector('.wl-editor')
+                if (editor) editor.focus()
+              }}
+              readOnly
+            />
+            <button className='w-10 h-10 rounded-full bg-violet-500 text-white flex items-center justify-center hover:bg-violet-600 transition-colors'>
+              <i className='fas fa-paper-plane text-sm'></i>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -99,120 +117,34 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         }
         
         .waline-container {
-          padding: 0 16px 80px 16px;
+          padding: 0 16px 16px 16px;
         }
         
         .waline-container .wl-header {
-          position: sticky;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          background: var(--waline-bgcolor, #fff);
-          padding: 12px 16px;
-          border-top: 1px solid var(--waline-border-color, #ebeef5);
-          margin: 0 -16px;
-          padding: 12px 16px;
-        }
-        
-        .waline-container .wl-header-item {
-          flex: 1;
-        }
-        
-        .waline-container .wl-input {
-          font-size: 14px;
+          display: none !important;
         }
         
         .waline-container .wl-editor {
-          min-height: 36px;
-          max-height: 80px;
+          min-height: 80px;
+          max-height: 120px;
           font-size: 14px;
           line-height: 1.5;
-        }
-        
-        .waline-container .wl-header-item .wl-input {
-          height: 36px;
-        }
-        
-        .waline-container .wl-reaction-img {
-          width: 60px;
-          height: 60px;
-        }
-        
-        .waline-container .wl-reaction-votes {
-          font-size: 12px;
-        }
-        
-        .waline-container .wl-comment-actions {
-          flex-wrap: wrap;
-        }
-        
-        .waline-container .wl-comment-actions button {
-          padding: 4px 8px;
-          font-size: 12px;
-        }
-        
-        .waline-container .wl-meta {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          background: var(--waline-bgcolor);
-          padding: 10px 16px;
-          border-top: 1px solid var(--waline-border-color);
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          z-index: 10;
-        }
-        
-        .waline-container .wl-meta input {
-          flex: 1;
-          height: 36px;
-          border-radius: 18px;
-          padding: 0 16px;
-          font-size: 14px;
-          background: var(--waline-bgcolor-light, #f5f5f5);
-          border: none;
-        }
-        
-        .waline-container .wl-meta button {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: var(--waline-theme-color, #7c3aed);
-          color: #fff;
-          border: none;
-          cursor: pointer;
-        }
-        
-        .dark .waline-container .wl-meta input {
-          background: rgba(255,255,255,0.05);
+          border-radius: 12px;
+          padding: 12px;
         }
         
         .waline-container .wl-panel {
-          position: fixed;
-          bottom: 56px;
-          left: 0;
-          right: 0;
-          background: var(--waline-bgcolor);
-          border-top: 1px solid var(--waline-border-color);
-          padding: 12px 16px;
-          z-index: 9;
+          position: relative;
+          margin-bottom: 12px;
+          border-radius: 12px;
+          border: 1px solid var(--waline-border-color);
+          padding: 12px;
         }
         
         .waline-container .wl-close {
           position: absolute;
           top: 8px;
           right: 8px;
-        }
-        
-        .waline-container .wl-reaction {
-          padding: 16px 0;
-          margin-bottom: 12px;
-          border-bottom: 1px solid var(--waline-border-color);
         }
         
         .waline-container .wl-cards .wl-card {
@@ -270,10 +202,14 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
           font-size: 12px;
         }
         
-        .waline-container .wl-card .wl-meta input {
-          background: transparent;
-          height: auto;
-          padding: 0;
+        .waline-container .wl-input {
+          font-size: 14px;
+          height: 36px;
+          border-radius: 8px;
+        }
+        
+        .waline-container .wl-reaction {
+          display: none !important;
         }
         
         html.dark .waline-container {
