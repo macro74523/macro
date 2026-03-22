@@ -303,6 +303,7 @@ const LayoutSlug = props => {
             post={post} 
             prevPost={prevPost}
             nextPost={nextPost}
+            toc={post?.toc || []}
           />
           
           <div className='hidden xl:block'>
@@ -320,7 +321,6 @@ const LayoutSlug = props => {
                     <MobilePostMeta post={post} />
                     <AdSlot />
                     <PostPoster post={post} />
-                    <Comment frontMatter={post} />
                   </div>
                 )}
               </div>
@@ -331,7 +331,6 @@ const LayoutSlug = props => {
         </div>
       )}
       <BackToTop />
-      <MobileTocButton toc={post?.toc || []} />
     </>
   )
 }

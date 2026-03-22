@@ -1,8 +1,26 @@
+import { siteConfig } from '@/lib/config'
+import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 
-const Comment = dynamic(() => import('@/components/Comment'), { ssr: false })
+const Comment = dynamic(() => import('@/components/Comment'), { 
+  ssr: false,
+  loading: () => (
+    <div className='flex items-center justify-center py-8'>
+      <div className='w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin'></div>
+    </div>
+  )
+})
 
 export default function CommentSidebar({ post, showComment, setShowComment }) {
+  const [mounted, setMounted] = useState(false)
+  const sidebarRef = useRef(null)
+
+  useEffect(() => {
+    if (showComment) {
+      setMounted(true)
+    }
+  }, [showComment])
+
   if (!showComment) return null
 
   return (
@@ -11,7 +29,9 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         className='fixed inset-0 bg-black/30 backdrop-blur-[2px] z-50 xl:hidden'
         onClick={() => setShowComment(false)}
       />
-      <div className='fixed top-0 right-0 bottom-0 w-[85vw] max-w-sm z-50 bg-white dark:bg-zinc-900 shadow-2xl animate-slideInRight xl:hidden flex flex-col'>
+      <div 
+        ref={sidebarRef}
+        className='fixed top-0 right-0 bottom-0 w-[85vw] max-w-sm z-50 bg-white dark:bg-zinc-900 shadow-2xl animate-slideInRight xl:hidden flex flex-col'>
         <div className='flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800 flex-shrink-0'>
           <div className='flex items-center gap-2'>
             <span className='w-8 h-8 rounded-xl bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center'>
@@ -27,7 +47,9 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         </div>
         
         <div className='flex-1 overflow-y-auto p-4'>
-          <Comment frontMatter={post} />
+          {mounted && post && (
+            <Comment frontMatter={post} />
+          )}
         </div>
       </div>
 
