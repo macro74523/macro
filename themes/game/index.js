@@ -25,7 +25,6 @@ import RightSidebar from './components/RightSidebar'
 import PostSidebar from './components/PostSidebar'
 import CategoryTabs from './components/CategoryTabs'
 import BackToTop from './components/BackToTop'
-import MobileTocButton from './components/MobileTocButton'
 import MobilePostMeta from './components/MobilePostMeta'
 import CONFIG from './config'
 import { Style } from './style'
@@ -34,7 +33,6 @@ const Comment = dynamic(() => import('@/components/Comment'), { ssr: false })
 const NotionPage = dynamic(() => import('@/components/NotionPage'))
 const GameEmbed = dynamic(() => import('./components/GameEmbed'))
 const GameListIndexCombine = dynamic(() => import('./components/GameListIndexCombine').then(mod => ({ default: mod.GameListIndexCombine })))
-const PostPoster = dynamic(() => import('./components/PostPoster'))
 const SearchModal = dynamic(() => import('./components/SearchModal'), { ssr: false })
 
 const ThemeGlobalGame = createContext()
@@ -320,7 +318,6 @@ const LayoutSlug = props => {
                     <NotionPage post={post} />
                     <MobilePostMeta post={post} />
                     <AdSlot />
-                    <PostPoster post={post} />
                   </div>
                 )}
               </div>

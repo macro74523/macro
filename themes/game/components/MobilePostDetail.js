@@ -268,9 +268,9 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
           </div>
         )}
 
-        <div className='flex items-center gap-3 my-2'>
+        <div className='flex items-center gap-2 my-1'>
           <div className='flex-1 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-700 to-transparent'></div>
-          <i className='fas fa-feather-alt text-zinc-300 dark:text-zinc-600 text-xs'></i>
+          <i className='fas fa-feather-alt text-zinc-300 dark:text-zinc-600 text-[10px]'></i>
           <div className='flex-1 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-700 to-transparent'></div>
         </div>
       </div>
