@@ -1,5 +1,6 @@
 import { siteConfig } from '@/lib/config'
 import { useEffect, useRef } from 'react'
+import '@waline/client/style'
 
 export default function PostReaction({ post }) {
   const serverURL = siteConfig('COMMENT_WALINE_SERVER_URL')
@@ -39,8 +40,32 @@ export default function PostReaction({ post }) {
             你认为这篇文章怎么样？
           </span>
         </div>
-        <div ref={containerRef} className='flex justify-center' />
+        <div ref={containerRef} className='waline-reaction-container' />
       </div>
+
+      <style jsx global>{`
+        .waline-reaction-container .wl-reaction {
+          display: flex;
+          justify-content: center;
+          gap: 12px;
+        }
+        
+        .waline-reaction-container .wl-reaction-img {
+          width: 48px;
+          height: 48px;
+        }
+        
+        .waline-reaction-container .wl-reaction-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+        }
+        
+        html.dark .waline-reaction-container {
+          --waline-bgcolor: transparent;
+        }
+      `}</style>
     </div>
   )
 }

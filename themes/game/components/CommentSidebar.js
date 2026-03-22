@@ -15,7 +15,8 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
           el: containerRef.current,
           serverURL,
           lang: siteConfig('LANG'),
-          login: 'force',
+          login: 'enable',
+          requiredMeta: ['nick'],
           reaction: false,
           dark: 'html.dark',
           emoji: [
@@ -99,7 +100,7 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         }
         
         .waline-container {
-          padding: 0 16px 140px 16px;
+          padding: 0 12px 160px 12px;
         }
         
         .waline-container .wl-panel {
@@ -109,14 +110,33 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
           right: 0;
           background: var(--waline-bgcolor, #fff);
           border-top: 1px solid var(--waline-border-color, #ebeef5);
-          padding: 12px 16px;
+          padding: 12px;
           margin: 0;
           border-radius: 0;
           z-index: 10;
         }
         
         .waline-container .wl-header {
-          display: none !important;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 8px;
+        }
+        
+        .waline-container .wl-header-item {
+          flex: 1;
+          min-width: 0;
+        }
+        
+        .waline-container .wl-header-item:nth-child(n+2) {
+          display: none;
+        }
+        
+        .waline-container .wl-input {
+          font-size: 14px;
+          height: 36px;
+          border-radius: 8px;
+          padding: 0 12px;
         }
         
         .waline-container .wl-editor {
@@ -189,18 +209,18 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
           font-size: 12px;
         }
         
-        .waline-container .wl-input {
-          font-size: 14px;
-          height: 36px;
-          border-radius: 8px;
-        }
-        
         .waline-container .wl-reaction {
           display: none !important;
         }
         
         .waline-container .wl-comment-actions {
           margin-top: 8px;
+          flex-wrap: wrap;
+        }
+        
+        .waline-container .wl-comment-actions button {
+          padding: 4px 10px;
+          font-size: 12px;
         }
         
         html.dark .waline-container {
