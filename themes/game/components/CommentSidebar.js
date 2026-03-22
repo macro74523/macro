@@ -1,24 +1,37 @@
 import { siteConfig } from '@/lib/config'
-import { useState, useEffect, useRef } from 'react'
-import dynamic from 'next/dynamic'
-
-const Comment = dynamic(() => import('@/components/Comment'), { 
-  ssr: false,
-  loading: () => (
-    <div className='flex items-center justify-center py-8'>
-      <div className='w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin'></div>
-    </div>
-  )
-})
+import { useEffect, useRef } from 'react'
+import '@waline/client/style'
 
 export default function CommentSidebar({ post, showComment, setShowComment }) {
-  const [mounted, setMounted] = useState(false)
+  const serverURL = siteConfig('COMMENT_WALINE_SERVER_URL')
+  const containerRef = useRef(null)
+  const walineRef = useRef(null)
 
   useEffect(() => {
-    if (showComment) {
-      setMounted(true)
+    if (showComment && containerRef.current && !walineRef.current) {
+      import('@waline/client').then(({ init }) => {
+        walineRef.current = init({
+          el: containerRef.current,
+          serverURL,
+          lang: siteConfig('LANG'),
+          reaction: true,
+          dark: 'html.dark',
+          emoji: [
+            '//npm.elemecdn.com/@waline/emojis@1.1.0/tieba',
+            '//npm.elemecdn.com/@waline/emojis@1.1.0/weibo',
+            '//npm.elemecdn.com/@waline/emojis@1.1.0/bilibili'
+          ]
+        })
+      })
     }
-  }, [showComment])
+    
+    return () => {
+      if (walineRef.current) {
+        walineRef.current.destroy()
+        walineRef.current = null
+      }
+    }
+  }, [showComment, serverURL])
 
   if (!showComment) return null
 
@@ -47,8 +60,8 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         </div>
         
         <div className='flex-1 overflow-y-auto px-4 py-3'>
-          {mounted && post && (
-            <Comment frontMatter={post} />
+          {serverURL && (
+            <div ref={containerRef} />
           )}
         </div>
       </div>
