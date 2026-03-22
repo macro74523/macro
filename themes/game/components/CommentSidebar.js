@@ -60,11 +60,7 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         </div>
         
         <div className='flex items-center justify-between px-4 pb-3 flex-shrink-0'>
-          <div className='flex items-center gap-2'>
-            <span className='font-semibold text-base text-zinc-800 dark:text-zinc-100'>评论</span>
-            <span className='text-xs text-zinc-400 dark:text-zinc-500'>·</span>
-            <span className='text-xs text-zinc-400 dark:text-zinc-500'>共0条</span>
-          </div>
+          <span className='font-semibold text-base text-zinc-800 dark:text-zinc-100'>评论</span>
           <div className='flex items-center gap-2'>
             <button 
               onClick={() => setIsFullscreen(!isFullscreen)}
@@ -100,7 +96,7 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         }
         
         .waline-container {
-          padding: 0 12px 160px 12px;
+          padding: 0 12px 120px 12px;
         }
         
         .waline-container .wl-panel {
@@ -110,7 +106,7 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
           right: 0;
           background: var(--waline-bgcolor, #fff);
           border-top: 1px solid var(--waline-border-color, #ebeef5);
-          padding: 12px;
+          padding: 8px 10px;
           margin: 0;
           border-radius: 0;
           z-index: 10;
@@ -119,8 +115,8 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         .waline-container .wl-header {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
-          margin-bottom: 8px;
+          gap: 6px;
+          margin-bottom: 6px;
         }
         
         .waline-container .wl-header-item {
@@ -133,19 +129,19 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         }
         
         .waline-container .wl-input {
-          font-size: 14px;
-          height: 36px;
-          border-radius: 8px;
-          padding: 0 12px;
+          font-size: 13px;
+          height: 32px;
+          border-radius: 6px;
+          padding: 0 10px;
         }
         
         .waline-container .wl-editor {
-          min-height: 60px;
-          max-height: 100px;
-          font-size: 14px;
-          line-height: 1.5;
-          border-radius: 12px;
-          padding: 10px 12px;
+          min-height: 40px;
+          max-height: 80px;
+          font-size: 13px;
+          line-height: 1.4;
+          border-radius: 8px;
+          padding: 8px 10px;
         }
         
         .waline-container .wl-close {
@@ -214,13 +210,13 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         }
         
         .waline-container .wl-comment-actions {
-          margin-top: 8px;
+          margin-top: 6px;
           flex-wrap: wrap;
         }
         
         .waline-container .wl-comment-actions button {
-          padding: 4px 10px;
-          font-size: 12px;
+          padding: 3px 8px;
+          font-size: 11px;
         }
         
         html.dark .waline-container {
