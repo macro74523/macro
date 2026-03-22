@@ -33,7 +33,7 @@ export default function PostReaction({ post }) {
   if (!serverURL || !post?.href) return null
 
   return (
-    <div className='xl:hidden mt-6 mb-3 px-1'>
+    <div className='mt-6 mb-3 px-1'>
       <div className='p-4 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-500/10 dark:to-purple-500/10 rounded-xl border border-violet-100 dark:border-violet-500/20'>
         <div className='text-center mb-3'>
           <span className='text-sm font-medium text-zinc-700 dark:text-zinc-300'>

@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import { isBrowser } from '@/lib/utils'
 import { useGlobal } from '@/lib/global'
 import CommentSidebar from './CommentSidebar'
+import PostReaction from './PostReaction'
 import { uuidToId } from 'notion-utils'
 
 export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
@@ -313,6 +314,8 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
           )}
         </div>
       </button>
+
+      <PostReaction post={post} />
 
       {(prevPost || nextPost) && (
         <div className='mt-6 mb-32 px-1'>
