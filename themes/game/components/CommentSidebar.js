@@ -7,6 +7,34 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
   const containerRef = useRef(null)
   const walineRef = useRef(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [dragY, setDragY] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStartY = useRef(0)
+  const sidebarRef = useRef(null)
+
+  const handleTouchStart = (e) => {
+    if (isFullscreen) return
+    dragStartY.current = e.touches[0].clientY
+    setIsDragging(true)
+  }
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || isFullscreen) return
+    const currentY = e.touches[0].clientY
+    const diff = currentY - dragStartY.current
+    if (diff > 0) {
+      setDragY(diff)
+    }
+  }
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return
+    setIsDragging(false)
+    if (dragY > 100) {
+      setShowComment(false)
+    }
+    setDragY(0)
+  }
 
   useEffect(() => {
     if (showComment && containerRef.current && !walineRef.current) {
@@ -39,10 +67,16 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
   useEffect(() => {
     if (!showComment) {
       setIsFullscreen(false)
+      setDragY(0)
     }
   }, [showComment])
 
   if (!showComment) return null
+
+  const sidebarStyle = dragY > 0 ? {
+    transform: `translateY(${dragY}px)`,
+    transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+  } : {}
 
   return (
     <>
@@ -50,13 +84,20 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         className='fixed inset-0 bg-black/50 z-50 xl:hidden'
         onClick={() => setShowComment(false)}
       />
-      <div className={`fixed left-0 right-0 z-50 bg-white dark:bg-zinc-900 shadow-2xl animate-slideUp xl:hidden flex flex-col transition-all duration-300 ${
-        isFullscreen 
-          ? 'inset-0' 
-          : 'bottom-0 h-[75vh] rounded-t-2xl'
-      }`}>
-        <div className={`flex items-center justify-center pt-3 pb-2 flex-shrink-0 ${!isFullscreen ? 'cursor-grab' : ''}`}>
-          <div className='w-9 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full'></div>
+      <div 
+        ref={sidebarRef}
+        style={sidebarStyle}
+        className={`fixed left-0 right-0 z-50 bg-white dark:bg-zinc-900 shadow-2xl xl:hidden flex flex-col transition-all duration-300 ${
+          isFullscreen 
+            ? 'inset-0' 
+            : 'bottom-0 h-[75vh] rounded-t-2xl'
+        } ${!showComment ? 'translate-y-full' : ''}`}>
+        <div 
+          className={`flex items-center justify-center pt-3 pb-2 flex-shrink-0 ${!isFullscreen ? 'cursor-grab active:cursor-grabbing' : ''}`}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}>
+          <div className={`w-9 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full transition-all ${dragY > 50 ? 'w-16' : ''}`}></div>
         </div>
         
         <div className='flex items-center justify-end px-4 pb-3 flex-shrink-0'>

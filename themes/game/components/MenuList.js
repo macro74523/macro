@@ -2,12 +2,14 @@ import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
 import { useGameGlobal } from '..'
 import CONFIG from '../config'
+import { useRouter } from 'next/router'
 import { MenuItemDrop } from './MenuItemDrop'
 
 export const MenuList = ({ showSearch = true, ...props }) => {
   const { setSideBarVisible } = useGameGlobal()
   const { customNav, customMenu, siteInfo } = props
   const { locale } = useGlobal()
+  const router = useRouter()
   
   const defaultLinks = [
     {
@@ -52,7 +54,9 @@ export const MenuList = ({ showSearch = true, ...props }) => {
   return (
     <nav className='space-y-1'>
       <div className='flex flex-col items-center mb-5 pb-5 border-b border-zinc-100 dark:border-zinc-800'>
-        <div className='w-16 h-16 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 mb-3 shadow-sm'>
+        <div 
+          className='w-16 h-16 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 mb-3 shadow-sm cursor-pointer hover:shadow-md transition-shadow'
+          onClick={() => router.push('/')}>
           {siteInfo?.icon ? (
             <img src={siteInfo.icon} alt='avatar' className='w-full h-full object-cover' />
           ) : (
