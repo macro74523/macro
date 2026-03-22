@@ -49,7 +49,9 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
     
     const fetchCommentCount = async () => {
       try {
-        const response = await fetch(`${serverURL}/api/comment?type=count&url=${encodeURIComponent(articlePath)}`)
+        const response = await fetch(
+          `${serverURL}/api/comment?type=count&url=${encodeURIComponent(articlePath)}`
+        )
         const data = await response.json()
         setCommentCount(data.data || 0)
       } catch (error) {
@@ -266,7 +268,7 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
           </div>
         )}
 
-        <div className='flex items-center gap-3 my-6'>
+        <div className='flex items-center gap-3 my-2'>
           <div className='flex-1 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-700 to-transparent'></div>
           <i className='fas fa-feather-alt text-zinc-300 dark:text-zinc-600 text-xs'></i>
           <div className='flex-1 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-700 to-transparent'></div>
