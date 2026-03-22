@@ -90,7 +90,9 @@ export default function LikeButton({ post }) {
         })
       })
     } catch (error) {
-      console.error('Failed to sync like to server:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to sync like to server:', error)
+      }
     }
   }
 

@@ -7,6 +7,7 @@ import { isBrowser } from '@/lib/utils'
 import { useGlobal } from '@/lib/global'
 import dynamic from 'next/dynamic'
 import { uuidToId } from 'notion-utils'
+import { useWalinePageview } from '../hooks/useWalinePageview'
 
 const CommentSidebar = dynamic(() => import('./CommentSidebar'), { ssr: false })
 
@@ -53,21 +54,7 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
   const title = post?.title || ''
   const cover = post?.pageCoverThumbnail || post?.pageCover
 
-  useEffect(() => {
-    if (!serverURL || !articlePath) return
-    
-    const initPageview = async () => {
-      const { pageviewCount } = await import('@waline/client/pageview')
-      pageviewCount({
-        serverURL,
-        path: articlePath,
-        selector: '.waline-pageview-count',
-        update: true
-      })
-    }
-    
-    initPageview()
-  }, [serverURL, articlePath])
+  useWalinePageview(articlePath)
 
   useEffect(() => {
     if (!serverURL || !articlePath) return
@@ -80,7 +67,9 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
         const data = await response.json()
         setCommentCount(data.data || 0)
       } catch (error) {
-        console.error('Failed to fetch comment count:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to fetch comment count:', error)
+        }
       }
     }
     
@@ -295,7 +284,9 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
       
       setPosterUrl(canvas.toDataURL('image/png'))
     } catch (error) {
-      console.error('生成海报失败:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('生成海报失败:', error)
+      }
     }
     setGenerating(false)
   }

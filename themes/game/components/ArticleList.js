@@ -1,6 +1,6 @@
 import LazyImage from '@/components/LazyImage'
 import SmartLink from '@/components/SmartLink'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import LikeButton from './LikeButton'
 import ArticleSkeleton from './ArticleSkeleton'
 
@@ -14,21 +14,50 @@ export const ArticleList = ({ posts, loading = false, skeletonCount = 6 }) => {
   return (
     <div className='columns-2 gap-3 space-y-3'>
       {posts.map((post, index) => (
-        <ArticleCard key={post.id || index} post={post} index={index} />
+        <ArticleCard key={post.id || index} post={post} />
       ))}
     </div>
   )
 }
 
-const ArticleCard = ({ post, index }) => {
+const ArticleCard = ({ post }) => {
   const title = post.title
   const cover = post.pageCoverThumbnail || post.pageCover
   const [isHovered, setIsHovered] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const [aspectRatio, setAspectRatio] = useState('aspect-[4/3]')
 
-  const heights = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-[1/1]', 'aspect-[4/6]', 'aspect-[3/5]']
-  const randomAspect = heights[index % heights.length]
+  useEffect(() => {
+    if (cover && !imageError) {
+      let mounted = true
+      const img = new Image()
+      
+      img.onload = () => {
+        if (!mounted) return
+        const ratio = img.width / img.height
+        if (ratio > 1) {
+          setAspectRatio('aspect-[4/3]')
+        } else {
+          setAspectRatio('aspect-[3/4]')
+        }
+      }
+      
+      img.onerror = () => {
+        if (mounted) {
+          setAspectRatio('aspect-[4/3]')
+        }
+      }
+      
+      img.src = cover
+      
+      return () => {
+        mounted = false
+        img.onload = null
+        img.onerror = null
+      }
+    }
+  }, [cover, imageError])
 
   const handleImageError = () => {
     setImageError(true)
@@ -44,7 +73,7 @@ const ArticleCard = ({ post, index }) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}>
         
-        <div className={`relative ${randomAspect} overflow-hidden bg-zinc-100 dark:bg-zinc-800`}>
+        <div className={`relative ${aspectRatio} overflow-hidden bg-zinc-100 dark:bg-zinc-800`}>
           {cover && !imageError ? (
             <>
               {!imageLoaded && (

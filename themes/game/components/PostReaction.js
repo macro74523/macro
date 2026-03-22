@@ -41,7 +41,9 @@ export default function PostReaction({ post }) {
           }
         }
       } catch (error) {
-        console.error('Failed to init reaction:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to init reaction:', error)
+        }
         if (mounted) {
           setIsLoading(false)
         }
@@ -56,7 +58,9 @@ export default function PostReaction({ post }) {
         try {
           reactionRef.current.destroy()
         } catch (e) {
-          console.error('Failed to destroy reaction:', e)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Failed to destroy reaction:', e)
+          }
         }
         reactionRef.current = null
       }

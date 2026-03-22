@@ -1,9 +1,6 @@
 import { siteConfig } from '@/lib/config'
 import { useEffect, useRef, useState } from 'react'
-import dynamic from 'next/dynamic'
 import '@waline/client/style'
-
-const PostReaction = dynamic(() => import('./PostReaction'), { ssr: false })
 
 export default function CommentSidebar({ post, showComment, setShowComment }) {
   const serverURL = siteConfig('COMMENT_WALINE_SERVER_URL')
@@ -78,7 +75,6 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         </div>
         
         <div className='flex-1 overflow-y-auto overflow-x-hidden relative'>
-          {post && post?.href && <PostReaction post={post} key={`reaction-${post.href}`} />}
           {serverURL && (
             <div ref={containerRef} className='waline-container' />
           )}

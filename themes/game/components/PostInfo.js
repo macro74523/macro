@@ -1,7 +1,7 @@
 import NotionIcon from '@/components/NotionIcon'
 import { siteConfig } from '@/lib/config'
-import { useEffect } from 'react'
 import { useRouter } from 'next/router'
+import { useWalinePageview } from '../hooks/useWalinePageview'
 
 export default function PostInfo(props) {
   const { post } = props
@@ -9,21 +9,7 @@ export default function PostInfo(props) {
   const serverURL = siteConfig('COMMENT_WALINE_SERVER_URL')
   const articlePath = post?.href
 
-  useEffect(() => {
-    if (!serverURL || !articlePath) return
-    
-    const initPageview = async () => {
-      const { pageviewCount } = await import('@waline/client/pageview')
-      pageviewCount({
-        serverURL,
-        path: articlePath,
-        selector: '.waline-pageview-count',
-        update: true
-      })
-    }
-    
-    initPageview()
-  }, [serverURL, articlePath])
+  useWalinePageview(articlePath)
 
   const handleBack = () => {
     if (window.history.length > 1) {
