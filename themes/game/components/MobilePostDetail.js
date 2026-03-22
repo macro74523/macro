@@ -2,13 +2,14 @@ import { siteConfig } from '@/lib/config'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import SmartLink from '@/components/SmartLink'
 import NotionIcon from '@/components/NotionIcon'
-import WordCount from '@/components/WordCount'
 import { useRouter } from 'next/router'
 import { isBrowser } from '@/lib/utils'
+import CommentSidebar from './CommentSidebar'
 
 export default function MobilePostDetail({ post, prevPost, nextPost }) {
   const [readingProgress, setReadingProgress] = useState(0)
   const [showSettings, setShowSettings] = useState(false)
+  const [showComment, setShowComment] = useState(false)
   const [fontSize, setFontSize] = useState(16)
   const [showImageModal, setShowImageModal] = useState(false)
   const [modalImage, setModalImage] = useState('')
@@ -149,10 +150,7 @@ export default function MobilePostDetail({ post, prevPost, nextPost }) {
   }
 
   const scrollToComment = () => {
-    const commentSection = document.getElementById('comment')
-    if (commentSection) {
-      commentSection.scrollIntoView({ behavior: 'smooth' })
-    }
+    setShowComment(true)
   }
 
   const handleShare = async () => {
@@ -215,56 +213,13 @@ export default function MobilePostDetail({ post, prevPost, nextPost }) {
           {post?.title}
         </h1>
 
-        <div className='flex flex-wrap items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400 mb-5'>
-          {post?.publishDay && (
-            <span className='flex items-center gap-1.5'>
-              <span className='w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center'>
-                <i className='far fa-calendar text-[10px] text-zinc-400'></i>
-              </span>
-              {post.publishDay}
+        {serverURL && (
+          <div className='flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 mb-4'>
+            <span className='w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center'>
+              <i className='far fa-eye text-[10px] text-zinc-400'></i>
             </span>
-          )}
-          {serverURL && (
-            <span className='flex items-center gap-1.5'>
-              <span className='w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center'>
-                <i className='far fa-eye text-[10px] text-zinc-400'></i>
-              </span>
-              <span className='waline-pageview-count' data-path={articlePath}>--</span>
-              <span>阅读</span>
-            </span>
-          )}
-          {(post?.wordCount || post?.readTime) && (
-            <span className='flex items-center gap-1.5'>
-              <span className='w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center'>
-                <i className='far fa-clock text-[10px] text-zinc-400'></i>
-              </span>
-              <WordCount wordCount={post.wordCount} readTime={post.readTime} />
-            </span>
-          )}
-        </div>
-
-        {post?.category && (
-          <div className='mb-4'>
-            <SmartLink
-              href={`/category/${post.category}`}
-              className='inline-flex items-center gap-2 px-3 py-1.5 bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 rounded-full text-xs font-medium border border-violet-100 dark:border-violet-500/20'>
-              <i className='fas fa-folder text-[10px]'></i>
-              {post.category}
-            </SmartLink>
-          </div>
-        )}
-
-        {post?.tags && post.tags.length > 0 && (
-          <div className='flex flex-wrap gap-2 mb-5'>
-            {post.tags.map((tag, index) => (
-              <SmartLink
-                key={index}
-                href={`/tag/${encodeURIComponent(tag)}`}
-                className='inline-flex items-center gap-1 px-2.5 py-1 bg-zinc-50 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 rounded-md text-xs hover:bg-violet-50 dark:hover:bg-violet-500/10 hover:text-violet-600 dark:hover:text-violet-400 transition-colors'>
-                <i className='fas fa-hashtag text-[8px] opacity-50'></i>
-                {tag}
-              </SmartLink>
-            ))}
+            <span className='waline-pageview-count' data-path={articlePath}>--</span>
+            <span>次阅读</span>
           </div>
         )}
 
@@ -278,10 +233,10 @@ export default function MobilePostDetail({ post, prevPost, nextPost }) {
       <div className='fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-100 dark:border-zinc-800 px-4 py-2 safe-area-bottom'>
         <div className='flex items-center justify-around'>
           <button 
-            onClick={scrollToComment}
+            onClick={() => setShowSettings(true)}
             className='flex flex-col items-center gap-1 py-1 px-3 text-zinc-500 dark:text-zinc-400 transition-all'>
-            <i className='far fa-comment text-lg'></i>
-            <span className='text-[10px]'>评论</span>
+            <i className='fas fa-sliders-h text-lg'></i>
+            <span className='text-[10px]'>设置</span>
           </button>
           
           <button 
@@ -292,16 +247,16 @@ export default function MobilePostDetail({ post, prevPost, nextPost }) {
           </button>
           
           <button 
-            onClick={() => setShowSettings(true)}
+            onClick={scrollToComment}
             className='flex flex-col items-center gap-1 py-1 px-3 text-zinc-500 dark:text-zinc-400 transition-all'>
-            <i className='fas fa-sliders-h text-lg'></i>
-            <span className='text-[10px]'>设置</span>
+            <i className='far fa-comment text-lg'></i>
+            <span className='text-[10px]'>评论</span>
           </button>
         </div>
       </div>
 
       {(prevPost || nextPost) && (
-        <div className='mt-8 mb-32 px-1'>
+        <div className='mt-6 mb-32 px-1'>
           <div className='flex items-center gap-3 mb-4'>
             <div className='flex-1 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-700 to-transparent'></div>
             <span className='text-xs text-zinc-400 dark:text-zinc-500'>导航</span>
@@ -404,6 +359,8 @@ export default function MobilePostDetail({ post, prevPost, nextPost }) {
           />
         </div>
       )}
+
+      <CommentSidebar post={post} showComment={showComment} setShowComment={setShowComment} />
     </div>
   )
 }

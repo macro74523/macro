@@ -26,6 +26,7 @@ import PostSidebar from './components/PostSidebar'
 import CategoryTabs from './components/CategoryTabs'
 import BackToTop from './components/BackToTop'
 import MobileTocButton from './components/MobileTocButton'
+import MobilePostMeta from './components/MobilePostMeta'
 import CONFIG from './config'
 import { Style } from './style'
 
@@ -316,6 +317,7 @@ const LayoutSlug = props => {
                 {post && (
                   <div className='mb-4'>
                     <NotionPage post={post} />
+                    <MobilePostMeta post={post} />
                     <AdSlot />
                     <PostPoster post={post} />
                     <Comment frontMatter={post} />
