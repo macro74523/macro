@@ -78,28 +78,10 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
           </div>
         </div>
         
-        <div className='flex-1 overflow-y-auto overflow-x-hidden pb-[120px]'>
+        <div className='flex-1 overflow-y-auto overflow-x-hidden relative'>
           {serverURL && (
             <div ref={containerRef} className='waline-container' />
           )}
-        </div>
-        
-        <div className='absolute bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-3 flex-shrink-0'>
-          <div className='flex items-center gap-2'>
-            <input 
-              type='text' 
-              placeholder='写下你的评论...' 
-              className='flex-1 h-10 px-4 bg-zinc-100 dark:bg-zinc-800 rounded-full text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50'
-              onClick={() => {
-                const editor = document.querySelector('.wl-editor')
-                if (editor) editor.focus()
-              }}
-              readOnly
-            />
-            <button className='w-10 h-10 rounded-full bg-violet-500 text-white flex items-center justify-center hover:bg-violet-600 transition-colors'>
-              <i className='fas fa-paper-plane text-sm'></i>
-            </button>
-          </div>
         </div>
       </div>
 
@@ -117,7 +99,20 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         }
         
         .waline-container {
-          padding: 0 16px 16px 16px;
+          padding: 0 16px 140px 16px;
+        }
+        
+        .waline-container .wl-panel {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: var(--waline-bgcolor, #fff);
+          border-top: 1px solid var(--waline-border-color, #ebeef5);
+          padding: 12px 16px;
+          margin: 0;
+          border-radius: 0;
+          z-index: 10;
         }
         
         .waline-container .wl-header {
@@ -125,20 +120,12 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         }
         
         .waline-container .wl-editor {
-          min-height: 80px;
-          max-height: 120px;
+          min-height: 60px;
+          max-height: 100px;
           font-size: 14px;
           line-height: 1.5;
           border-radius: 12px;
-          padding: 12px;
-        }
-        
-        .waline-container .wl-panel {
-          position: relative;
-          margin-bottom: 12px;
-          border-radius: 12px;
-          border: 1px solid var(--waline-border-color);
-          padding: 12px;
+          padding: 10px 12px;
         }
         
         .waline-container .wl-close {
@@ -210,6 +197,10 @@ export default function CommentSidebar({ post, showComment, setShowComment }) {
         
         .waline-container .wl-reaction {
           display: none !important;
+        }
+        
+        .waline-container .wl-comment-actions {
+          margin-top: 8px;
         }
         
         html.dark .waline-container {
