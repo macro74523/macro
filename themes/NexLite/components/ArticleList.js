@@ -1,10 +1,10 @@
 import LazyImage from '@/components/LazyImage'
 import SmartLink from '@/components/SmartLink'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import LikeButton from './LikeButton'
 import ArticleSkeleton from './ArticleSkeleton'
 
-export const ArticleList = ({ posts, loading = false, skeletonCount = 6 }) => {
+export const ArticleList = memo(function ArticleList({ posts, loading = false, skeletonCount = 6 }) {
   if (loading) {
     return <ArticleSkeleton count={skeletonCount} />
   }
@@ -18,9 +18,9 @@ export const ArticleList = ({ posts, loading = false, skeletonCount = 6 }) => {
       ))}
     </div>
   )
-}
+})
 
-const ArticleCard = ({ post }) => {
+const ArticleCard = memo(function ArticleCard({ post }) {
   const title = post.title
   const cover = post.pageCoverThumbnail || post.pageCover
   const [isHovered, setIsHovered] = useState(false)
@@ -29,34 +29,20 @@ const ArticleCard = ({ post }) => {
   const [aspectRatio, setAspectRatio] = useState('aspect-[4/3]')
 
   useEffect(() => {
-    if (cover && !imageError) {
-      let mounted = true
-      const img = new Image()
-      
-      img.onload = () => {
-        if (!mounted) return
-        const ratio = img.width / img.height
-        if (ratio > 1) {
-          setAspectRatio('aspect-[4/3]')
-        } else {
-          setAspectRatio('aspect-[3/4]')
-        }
-      }
-      
-      img.onerror = () => {
-        if (mounted) {
-          setAspectRatio('aspect-[4/3]')
-        }
-      }
-      
-      img.src = cover
-      
-      return () => {
-        mounted = false
-        img.onload = null
-        img.onerror = null
-      }
+    if (!cover || imageError) {
+      setAspectRatio('aspect-[4/3]')
+      return
     }
+
+    const img = new Image()
+    img.onload = () => {
+      const ratio = img.width / img.height
+      setAspectRatio(ratio > 1 ? 'aspect-[4/3]' : 'aspect-[3/4]')
+    }
+    img.onerror = () => {
+      setAspectRatio('aspect-[4/3]')
+    }
+    img.src = cover
   }, [cover, imageError])
 
   const handleImageError = () => {
@@ -111,4 +97,4 @@ const ArticleCard = ({ post }) => {
       </SmartLink>
     </article>
   )
-}
+})

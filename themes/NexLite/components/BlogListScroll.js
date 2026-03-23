@@ -2,7 +2,7 @@ import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
 import { deepClone } from '@/lib/utils'
 import throttle from 'lodash.throttle'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react'
 import { ArticleList } from './ArticleList'
 
 export const BlogListScroll = props => {
@@ -18,43 +18,38 @@ export const BlogListScroll = props => {
     }
   }, [posts])
 
-  let hasMore = false
-  const postsToShow =
-    posts && Array.isArray(posts)
-      ? deepClone(posts).slice(0, POSTS_PER_PAGE * page)
-      : []
+  const hasMore = useMemo(() => {
+    if (!posts) return false
+    return page * POSTS_PER_PAGE < posts.length
+  }, [posts, page, POSTS_PER_PAGE])
 
-  if (posts) {
-    const totalCount = posts.length
-    hasMore = page * POSTS_PER_PAGE < totalCount
-  }
-  const handleGetMore = () => {
+  const postsToShow = useMemo(() => {
+    if (!posts || !Array.isArray(posts)) return []
+    return deepClone(posts).slice(0, POSTS_PER_PAGE * page)
+  }, [posts, page, POSTS_PER_PAGE])
+
+  const handleGetMore = useCallback(() => {
     if (!hasMore) return
-    updatePage(page + 1)
-  }
+    updatePage(prev => prev + 1)
+  }, [hasMore])
 
   const targetRef = useRef(null)
 
-  const scrollTrigger = useCallback(
-    throttle(() => {
+  useEffect(() => {
+    const scrollTrigger = throttle(() => {
       const scrollS = window.scrollY + window.outerHeight
-      const clientHeight = targetRef
-        ? targetRef.current
-          ? targetRef.current.clientHeight
-          : 0
-        : 0
+      const clientHeight = targetRef.current?.clientHeight || 0
       if (scrollS > clientHeight + 100) {
         handleGetMore()
       }
     }, 500)
-  )
 
-  useEffect(() => {
     window.addEventListener('scroll', scrollTrigger)
     return () => {
       window.removeEventListener('scroll', scrollTrigger)
+      scrollTrigger.cancel()
     }
-  })
+  }, [handleGetMore])
 
   return (
     <>

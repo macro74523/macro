@@ -1,5 +1,6 @@
 import { siteConfig } from '@/lib/config'
 import SmartLink from '@/components/SmartLink'
+import RssButton from './RssButton'
 
 export default function Logo({ siteInfo }) {
   const showRss = siteConfig('ENABLE_RSS')
@@ -21,17 +22,7 @@ export default function Logo({ siteInfo }) {
             <i className='fas fa-gamepad text-white text-2xl'></i>
           </div>
         )}
-        {showRss && (
-          <a
-            href='/rss/feed.xml'
-            target='_blank'
-            rel='noreferrer'
-            onClick={(e) => e.stopPropagation()}
-            className='absolute -top-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 z-10'
-            title='RSS 订阅'>
-            <i className='fas fa-rss text-white text-[10px]'></i>
-          </a>
-        )}
+        {showRss && <RssButton />}
       </div>
       <h1 className='text-base font-bold text-gray-800 dark:text-white leading-tight mb-1'>
         {siteInfo?.title}

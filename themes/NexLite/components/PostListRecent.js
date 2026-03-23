@@ -1,27 +1,19 @@
-import { deepClone } from '@/lib/utils'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
 import { useNexLiteGlobal } from '..'
 import LazyImage from '@/components/LazyImage'
 
-export const PostListRecent = ({ maxCount = 10 }) => {
+export const PostListRecent = memo(function PostListRecent({ maxCount = 10 }) {
   const { recentPosts } = useNexLiteGlobal()
   const [isVisible, setIsVisible] = useState(true)
-  const postsClone = deepClone(recentPosts)
-  const components = []
+  
+  const displayPosts = useMemo(() => {
+    if (!recentPosts || recentPosts.length === 0) return []
+    return recentPosts.slice(0, maxCount)
+  }, [recentPosts, maxCount])
 
-  let index = 0
-  while (postsClone?.length > 0 && index < maxCount) {
-    const item = postsClone?.shift()
-    if (item) {
-      components.push(<PostItem key={index} item={item} />)
-      index++
-    }
-    continue
-  }
-
-  if (components.length === 0 || !isVisible) {
-    return <></>
+  if (displayPosts.length === 0 || !isVisible) {
+    return null
   }
 
   return (
@@ -30,7 +22,7 @@ export const PostListRecent = ({ maxCount = 10 }) => {
         <h3 className='text-sm font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5'>
           <i className='fas fa-clock-rotate-left text-violet-500 text-xs'></i>
           最近浏览
-          <span className='text-xs text-zinc-400 dark:text-zinc-500 ml-1'>({components.length})</span>
+          <span className='text-xs text-zinc-400 dark:text-zinc-500 ml-1'>({displayPosts.length})</span>
         </h3>
         <button
           onClick={() => setIsVisible(false)}
@@ -41,36 +33,38 @@ export const PostListRecent = ({ maxCount = 10 }) => {
       </div>
       <div className='w-full overflow-x-auto scrollbar-hide'>
         <div className='flex gap-2' style={{ minWidth: 'min-content' }}>
-          {components}
+          {displayPosts.map((item, index) => (
+            <PostItem key={item.id || index} item={item} />
+          ))}
         </div>
       </div>
     </div>
   )
-}
+})
 
-const PostItem = ({ item }) => {
+const PostItem = memo(function PostItem({ item }) {
   const router = useRouter()
   const { recentPosts, setRecentPosts } = useNexLiteGlobal()
   const { title } = item || {}
   const [isHovered, setIsHovered] = useState(false)
   const [imageError, setImageError] = useState(false)
 
-  const removeRecent = e => {
+  const removeRecent = useCallback((e) => {
     e.stopPropagation()
-    const updatedRecentPosts = deepClone(recentPosts)
-    const indexToRemove = updatedRecentPosts.findIndex(
+    const indexToRemove = recentPosts.findIndex(
       post => post?.title === item.title
     )
     if (indexToRemove !== -1) {
+      const updatedRecentPosts = [...recentPosts]
       updatedRecentPosts.splice(indexToRemove, 1)
       setRecentPosts(updatedRecentPosts)
       localStorage.setItem('recent_posts', JSON.stringify(updatedRecentPosts))
     }
-  }
+  }, [recentPosts, setRecentPosts, item.title])
 
-  const handleButtonClick = () => {
+  const handleButtonClick = useCallback(() => {
     router.push(item?.href)
-  }
+  }, [router, item?.href])
 
   const img = item?.pageCoverThumbnail
 
@@ -106,4 +100,4 @@ const PostItem = ({ item }) => {
       </button>
     </div>
   )
-}
+})

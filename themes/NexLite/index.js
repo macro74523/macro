@@ -36,6 +36,18 @@ const PostReaction = dynamic(() => import('./components/PostReaction'), { ssr: f
 const MobilePostDetail = dynamic(() => import('./components/MobilePostDetail'), { ssr: false })
 const PostInfo = dynamic(() => import('./components/PostInfo'), { ssr: false })
 
+// Helper function to filter posts by keyword
+const filterPostsByKeyword = (posts, filterKey) => {
+  if (!filterKey || !posts) {
+    return posts || []
+  }
+  return posts.filter(post => {
+    const tagContent = post?.tags ? post?.tags.join(' ') : ''
+    const searchContent = post.title + post.summary + tagContent
+    return searchContent.toLowerCase().includes(filterKey.toLowerCase())
+  })
+}
+
 const ThemeGlobalNexLite = createContext()
 export const useNexLiteGlobal = () => useContext(ThemeGlobalNexLite)
 
@@ -53,15 +65,13 @@ const LayoutBase = props => {
   const searchModal = useRef(null)
   const [filterKey, setFilterKey] = useState('')
 
-  const [filterPosts, setFilterPosts] = useState(
-    deepClone(
-      allNavPages?.filter(item =>
-        item.tags?.some(
-          t => t === siteConfig('NEXLITE_RECOMMEND_TAG', 'Recommend', CONFIG)
-        )
+  const [filterPosts, setFilterPosts] = useState(() => {
+    return allNavPages?.filter(item =>
+      item.tags?.some(
+        t => t === siteConfig('NEXLITE_RECOMMEND_TAG', 'Recommend', CONFIG)
       )
-    )
-  )
+    ) || []
+  })
   const [recentPosts, setRecentPosts] = useState([])
   const [sideBarVisible, setSideBarVisible] = useState(false)
   const { updateDarkMode } = useGlobal()
@@ -156,16 +166,7 @@ const LayoutIndex = props => {
 const LayoutPostList = props => {
   const { posts, categoryOptions, currentCategory } = props
   const { filterKey } = useNexLiteGlobal()
-  let filteredBlogPosts = []
-  if (filterKey && posts) {
-    filteredBlogPosts = posts.filter(post => {
-      const tagContent = post?.tags ? post?.tags.join(' ') : ''
-      const searchContent = post.title + post.summary + tagContent
-      return searchContent.toLowerCase().includes(filterKey.toLowerCase())
-    })
-  } else {
-    filteredBlogPosts = deepClone(posts)
-  }
+  const filteredBlogPosts = filterPostsByKeyword(posts, filterKey)
 
   return (
     <>
@@ -196,16 +197,7 @@ const LayoutSearch = props => {
   }, [])
 
   const { filterKey } = useNexLiteGlobal()
-  let filteredBlogPosts = []
-  if (filterKey && posts) {
-    filteredBlogPosts = posts.filter(post => {
-      const tagContent = post?.tags ? post?.tags.join(' ') : ''
-      const searchContent = post.title + post.summary + tagContent
-      return searchContent.toLowerCase().includes(filterKey.toLowerCase())
-    })
-  } else {
-    filteredBlogPosts = deepClone(posts)
-  }
+  const filteredBlogPosts = filterPostsByKeyword(posts, filterKey)
 
   return (
     <>

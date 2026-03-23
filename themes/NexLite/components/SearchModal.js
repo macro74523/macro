@@ -1,6 +1,5 @@
 import { siteConfig } from '@/lib/config'
-import { deepClone } from '@/lib/utils'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo, memo } from 'react'
 import { useNexLiteGlobal } from '..'
 import CONFIG from '../config'
 import LazyImage from '@/components/LazyImage'
@@ -11,7 +10,17 @@ export default function SearchModal({ allNavPages, siteInfo }) {
     useNexLiteGlobal()
   const inputRef = useRef(null)
   const [searchValue, setSearchValue] = useState('')
-  const allPosts = deepClone(allNavPages) || []
+  
+  const allPosts = useMemo(() => allNavPages || [], [allNavPages])
+  
+  const recommendPosts = useMemo(() => {
+    if (!allPosts || allPosts.length === 0) return []
+    return allPosts.filter(item =>
+      item.tags?.some(
+        t => t === siteConfig('NEXLITE_RECOMMEND_TAG', 'Recommend', CONFIG)
+      )
+    )
+  }, [allPosts])
   
   useEffect(() => {
     if (sideBarVisible) {
@@ -29,29 +38,17 @@ export default function SearchModal({ allNavPages, siteInfo }) {
   }, [sideBarVisible])
 
   useEffect(() => {
-    if (allPosts && allPosts.length > 0) {
-      setFilterPosts(
-        allPosts?.filter(item =>
-          item.tags?.some(
-            t => t === siteConfig('NEXLITE_RECOMMEND_TAG', 'Recommend', CONFIG)
-          )
-        )
-      )
+    if (recommendPosts.length > 0) {
+      setFilterPosts(recommendPosts)
     }
-  }, [allNavPages])
+  }, [recommendPosts, setFilterPosts])
 
   const handleSearch = e => {
     const search = e.target.value
     setSearchValue(search)
     
     if (!search || search === '') {
-      setFilterPosts(
-        allPosts?.filter(item =>
-          item.tags?.some(
-            t => t === siteConfig('NEXLITE_RECOMMEND_TAG', 'Recommend', CONFIG)
-          )
-        )
-      )
+      setFilterPosts(recommendPosts)
       return
     }
     
@@ -64,7 +61,7 @@ export default function SearchModal({ allNavPages, siteInfo }) {
       )
     })
 
-    setFilterPosts(deepClone(filtered))
+    setFilterPosts(filtered || [])
   }
 
   const handleKeyDown = e => {
