@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, memo } from 'react'
 import { siteConfig } from '@/lib/config'
+import { RecentComments } from '@waline/client'
 
 const DanmakuItem = memo(function DanmakuItem({ id, text, top, duration, onFinish }) {
   const [isVisible, setIsVisible] = useState(true)
@@ -23,7 +24,7 @@ const DanmakuItem = memo(function DanmakuItem({ id, text, top, duration, onFinis
         animationDuration: `${duration}s`,
         opacity: 0.7
       }}>
-      <span className='text-shadow-sm px-2 py-1 text-sm md:text-base lg:text-lg text-white dark:text-zinc-100 font-medium'>
+      <span className='text-shadow-sm px-2 py-1 text-sm md:text-base lg:text-lg text-white dark:text-zinc-100 font-medium bg-black/20 rounded-full'>
         {text}
       </span>
     </div>
@@ -34,32 +35,51 @@ export default function Danmaku({ enabled = true }) {
   const [activeDanmaku, setActiveDanmaku] = useState([])
   const [comments, setComments] = useState([])
   const [index, setIndex] = useState(0)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    const fetchComments = async () => {
-      const serverURL = siteConfig('COMMENT_WALINE_SERVER_URL')
-      if (!serverURL) return
+    const serverURL = siteConfig('COMMENT_WALINE_SERVER_URL')
+    if (!serverURL || !enabled) return
 
+    const fetchComments = async () => {
       try {
-        const res = await fetch(`${serverURL}/api/comment?path=/&pageSize=50`)
-        const data = await res.json()
-        if (data.data && data.data.length > 0) {
-          const formattedComments = data.data.map(comment => ({
+        const result = await RecentComments({
+          serverURL,
+          count: 50
+        })
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[Danmaku] Waline response:', result)
+        }
+        
+        if (result && result.comments && result.comments.length > 0) {
+          const formattedComments = result.comments.map(comment => ({
             id: comment.objectId,
-            text: comment.comment,
+            text: comment.comment.replace(/<[^>]*>/g, '').substring(0, 50),
             nick: comment.nick
           }))
           setComments(formattedComments)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[Danmaku] Loaded comments:', formattedComments.length)
+          }
+        } else {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[Danmaku] No comments found')
+          }
         }
+        setIsLoaded(true)
       } catch (error) {
-        console.error('获取弹幕失败:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Danmaku] Failed to fetch comments:', error)
+        }
+        setIsLoaded(true)
       }
     }
 
     fetchComments()
     const interval = setInterval(fetchComments, 60000)
     return () => clearInterval(interval)
-  }, [])
+  }, [enabled])
 
   const addDanmaku = useCallback(() => {
     if (!comments || comments.length === 0) return
@@ -82,6 +102,7 @@ export default function Danmaku({ enabled = true }) {
   useEffect(() => {
     if (!enabled || comments.length === 0) return
 
+    addDanmaku()
     const interval = setInterval(() => {
       addDanmaku()
     }, 3000)
@@ -93,7 +114,7 @@ export default function Danmaku({ enabled = true }) {
     setActiveDanmaku(prev => prev.filter(item => item.id !== id))
   }, [])
 
-  if (!enabled || comments.length === 0) return null
+  if (!enabled || !isLoaded || comments.length === 0) return null
 
   return (
     <div className='fixed inset-0 overflow-hidden pointer-events-none'>
