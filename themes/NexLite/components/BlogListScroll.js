@@ -3,13 +3,20 @@ import { useGlobal } from '@/lib/global'
 import { deepClone } from '@/lib/utils'
 import throttle from 'lodash.throttle'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { GameListIndexCombine } from './GameListIndexCombine'
+import { ArticleList } from './ArticleList'
 
 export const BlogListScroll = props => {
   const { posts } = props
   const { locale, NOTION_CONFIG } = useGlobal()
   const [page, updatePage] = useState(1)
+  const [initialLoading, setInitialLoading] = useState(true)
   const POSTS_PER_PAGE = siteConfig('POSTS_PER_PAGE', null, NOTION_CONFIG)
+
+  useEffect(() => {
+    if (posts && posts.length > 0) {
+      setInitialLoading(false)
+    }
+  }, [posts])
 
   let hasMore = false
   const postsToShow =
@@ -28,7 +35,6 @@ export const BlogListScroll = props => {
 
   const targetRef = useRef(null)
 
-  // 监听滚动自动分页加载
   const scrollTrigger = useCallback(
     throttle(() => {
       const scrollS = window.scrollY + window.outerHeight
@@ -52,15 +58,24 @@ export const BlogListScroll = props => {
 
   return (
     <>
-      <div id='posts-wrapper' className='my-4' ref={targetRef}>
-        <GameListIndexCombine posts={postsToShow} />
+      <div id='posts-wrapper' ref={targetRef}>
+        <ArticleList posts={postsToShow} loading={initialLoading} />
       </div>
 
       <div
         onClick={handleGetMore}
-        className='w-full my-4 py-4 text-center cursor-pointer '>
-        {' '}
-        {hasMore ? locale.COMMON.MORE : `${locale.COMMON.NO_MORE} 😰`}{' '}
+        className='pix-card p-4 my-4 text-center cursor-pointer text-sm text-gray-400 dark:text-gray-500 hover:text-purple-500 transition-colors'>
+        {hasMore ? (
+          <span className='flex items-center justify-center gap-2'>
+            <i className='fas fa-chevron-down'></i>
+            {locale.COMMON.MORE}
+          </span>
+        ) : (
+          <span className='flex items-center justify-center gap-2'>
+            <i className='fas fa-check-circle'></i>
+            {locale.COMMON.NO_MORE}
+          </span>
+        )}
       </div>
     </>
   )

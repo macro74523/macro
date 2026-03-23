@@ -1,36 +1,26 @@
+import { siteConfig } from '@/lib/config'
+import { useGlobal } from '@/lib/global'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
 
-export default function RandomPostButton({ posts }) {
+/**
+ * 随机跳转到一个文章
+ */
+export default function RandomPostButton(props) {
+  const { latestPosts } = props
   const router = useRouter()
-  const [isSpinning, setIsSpinning] = useState(false)
-
-  const handleRandomPost = () => {
-    if (!posts || posts.length === 0) return
-    
-    setIsSpinning(true)
-    
-    const randomIndex = Math.floor(Math.random() * posts.length)
-    const randomPost = posts[randomIndex]
-    
-    setTimeout(() => {
-      setIsSpinning(false)
-      if (randomPost?.href) {
-        router.push(randomPost.href)
-      }
-    }, 500)
+  const { locale } = useGlobal()
+  /**
+   * 随机跳转文章
+   */
+  function handleClick() {
+    const randomIndex = Math.floor(Math.random() * latestPosts.length)
+    const randomPost = latestPosts[randomIndex]
+    router.push(`${siteConfig('SUB_PATH', '')}/${randomPost?.slug}`)
   }
 
   return (
-    <div className='pt-6 border-t border-zinc-100 dark:border-zinc-800'>
-      <button
-        onClick={handleRandomPost}
-        disabled={!posts || posts.length === 0}
-        className='w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white rounded-lg transition-all duration-300 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed group'
-      >
-        <i className={`fas fa-shuffle ${isSpinning ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-500`}></i>
-        <span className='font-medium text-sm'>随机阅读</span>
-      </button>
-    </div>
+        <div title={locale.MENU.WALK_AROUND} className='cursor-pointer hover:bg-black hover:bg-opacity-10 rounded-full w-10 h-10 flex justify-center items-center duration-200 transition-all' onClick={handleClick}>
+            <i className="fa-solid fa-podcast"></i>
+        </div>
   )
 }

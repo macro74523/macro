@@ -2,6 +2,30 @@ import { useState, useRef, useEffect } from 'react'
 import SmartLink from '@/components/SmartLink'
 import { useRouter } from 'next/router'
 
+const categoryIcons = {
+  '推荐': 'fas fa-fire',
+  '热门': 'fas fa-fire-flame-curved',
+  '最新': 'fas fa-clock',
+  '动作': 'fas fa-bolt',
+  '冒险': 'fas fa-compass',
+  '益智': 'fas fa-puzzle-piece',
+  '休闲': 'fas fa-gamepad',
+  '体育': 'fas fa-futbol',
+  '竞速': 'fas fa-car',
+  '射击': 'fas fa-crosshairs',
+  '策略': 'fas fa-chess',
+  '角色扮演': 'fas fa-hat-wizard',
+  '模拟': 'fas fa-vr-cardboard',
+  '多人': 'fas fa-users',
+  '单人': 'fas fa-user',
+  '经典': 'fas fa-star',
+  '小游戏': 'fas fa-dice',
+}
+
+const getCategoryIcon = (name) => {
+  return categoryIcons[name] || 'fas fa-folder'
+}
+
 export default function CategoryTabs({ categories, currentCategory }) {
   const [showLeftArrow, setShowLeftArrow] = useState(false)
   const [showRightArrow, setShowRightArrow] = useState(false)
@@ -12,7 +36,12 @@ export default function CategoryTabs({ categories, currentCategory }) {
     { name: '推荐', href: '/', icon: 'fas fa-fire' },
   ]
 
-  const allTabs = [...defaultTabs, ...(categories || []).map(c => ({ name: c.name, href: `/category/${c.name}`, count: c.count }))]
+  const allTabs = [...defaultTabs, ...(categories || []).map(c => ({ 
+    name: c.name, 
+    href: `/category/${c.name}`, 
+    count: c.count,
+    icon: getCategoryIcon(c.name)
+  }))]
 
   useEffect(() => {
     const checkScroll = () => {
@@ -20,13 +49,11 @@ export default function CategoryTabs({ categories, currentCategory }) {
       if (!el) return
 
       const { scrollLeft, scrollWidth, clientWidth } = el
-      // 给判断留一点容差，避免“临界抖动”
       const tolerance = 4
       setShowLeftArrow(scrollLeft > tolerance)
       setShowRightArrow(scrollLeft < scrollWidth - clientWidth - tolerance)
     }
 
-    // 首次/路由切换/类别变化后，确保箭头状态正确
     checkScroll()
 
     const scrollEl = scrollRef.current
@@ -50,7 +77,7 @@ export default function CategoryTabs({ categories, currentCategory }) {
     }
   }
 
-  const isActiveTab = (tab, index) => {
+  function isActiveTab(tab, index) {
     const pathname = router.pathname
     const query = router.query
     
@@ -76,7 +103,6 @@ export default function CategoryTabs({ categories, currentCategory }) {
     const activeIndex = allTabs.findIndex((tab, idx) => isActiveTab(tab, idx))
     if (activeIndex < 0) return
 
-    // 将当前激活 tab 滚动到视口内（居中显示更像 Pix 的交互）
     const anchors = el.querySelectorAll('a')
     const activeEl = anchors?.[activeIndex]
     if (activeEl && typeof activeEl.scrollIntoView === 'function') {
@@ -94,7 +120,7 @@ export default function CategoryTabs({ categories, currentCategory }) {
         {showLeftArrow && (
           <button
             onClick={() => scroll('left')}
-            className='absolute left-0 z-10 w-8 h-8 flex items-center justify-center bg-gradient-to-r from-white dark:from-zinc-900 to-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 rounded-full'
+            className='absolute left-0 z-10 w-8 h-8 flex items-center justify-center bg-gradient-to-r from-white dark:from-zinc-900 to-transparent focus:outline-none'
             aria-label='向左滚动分类'
             type='button'>
             <i className='fas fa-chevron-left text-zinc-400 text-xs'></i>
@@ -103,13 +129,12 @@ export default function CategoryTabs({ categories, currentCategory }) {
         
         <div
           ref={scrollRef}
-          className='flex items-center gap-1 overflow-x-auto scrollbar-hide py-3 scroll-smooth'
+          className='flex items-center gap-2 overflow-x-auto scrollbar-hide py-2.5 scroll-smooth'
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            // 给左右箭头留出点击/可视区域，避免遮挡
-            paddingLeft: showLeftArrow ? 12 : 12,
-            paddingRight: showRightArrow ? 48 : 12
+            paddingLeft: showLeftArrow ? 28 : 8,
+            paddingRight: showRightArrow ? 40 : 8
           }}>
           {allTabs.map((tab, index) => {
             const isActive = isActiveTab(tab, index)
@@ -117,15 +142,19 @@ export default function CategoryTabs({ categories, currentCategory }) {
               <SmartLink
                 key={index}
                 href={tab.href}
-                className={`flex-shrink-0 px-4 py-1.5 text-sm rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 ${
+                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full transition-all duration-200 ${
                   isActive
-                    ? 'text-white font-medium bg-violet-500 dark:bg-violet-500 shadow-sm'
+                    ? 'text-white font-medium bg-violet-500 shadow-sm shadow-violet-500/20'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-violet-500 dark:hover:text-violet-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 }`}>
-                {tab.icon && <i className={`${tab.icon} mr-1.5 text-xs`}></i>}
-                {tab.name}
+                <i className={`${tab.icon} text-xs ${isActive ? 'text-white' : 'text-zinc-400'}`}></i>
+                <span>{tab.name}</span>
                 {tab.count && (
-                  <span className={`ml-1 text-xs ${isActive ? 'text-white/80' : 'text-zinc-300 dark:text-zinc-600'}`}>({tab.count})</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                    isActive 
+                      ? 'bg-white/20 text-white' 
+                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500'
+                  }`}>{tab.count}</span>
                 )}
               </SmartLink>
             )
@@ -135,7 +164,7 @@ export default function CategoryTabs({ categories, currentCategory }) {
         {showRightArrow && (
           <button
             onClick={() => scroll('right')}
-            className='absolute right-0 z-10 w-8 h-8 flex items-center justify-center bg-gradient-to-l from-white dark:from-zinc-900 to-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/30 rounded-full'
+            className='absolute right-0 z-10 w-8 h-8 flex items-center justify-center bg-gradient-to-l from-white dark:from-zinc-900 to-transparent focus:outline-none'
             aria-label='向右滚动分类'
             type='button'>
             <i className='fas fa-chevron-right text-zinc-400 text-xs'></i>

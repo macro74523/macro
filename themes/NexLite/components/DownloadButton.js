@@ -22,10 +22,14 @@ export default function DownloadButton() {
         navigator.serviceWorker
           .register('/service-worker.js')
           .then(registration => {
-            console.log('Service Worker 注册成功:', registration)
+            if (process.env.NODE_ENV === 'development') {
+              console.log('Service Worker 注册成功:', registration)
+            }
           })
           .catch(error => {
-            console.log('Service Worker 注册失败:', error)
+            if (process.env.NODE_ENV === 'development') {
+              console.log('Service Worker 注册失败:', error)
+            }
           })
       })
 
@@ -51,13 +55,15 @@ export default function DownloadButton() {
       // 等待用户做出选择
       window.deferredPrompt.userChoice.then(choiceResult => {
         if (choiceResult.outcome === 'accepted') {
-          // 用户已安装，隐藏按钮
           setShowButton(false)
-          console.log('用户已同意安装')
+          if (process.env.NODE_ENV === 'development') {
+            console.log('用户已同意安装')
+          }
         } else {
-          console.log('用户已拒绝安装')
+          if (process.env.NODE_ENV === 'development') {
+            console.log('用户已拒绝安装')
+          }
         }
-        // 清除安装提示
         window.deferredPrompt = null
       })
     }

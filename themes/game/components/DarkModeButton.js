@@ -1,10 +1,16 @@
 import { useGlobal } from '@/lib/global'
 import { useImperativeHandle } from 'react'
 
+/**
+ * 深色模式按钮
+ */
 const DarkModeButton = props => {
-  const { cRef } = props
+  const { cRef, className } = props
   const { isDarkMode, toggleDarkMode } = useGlobal()
 
+  /**
+   * 对外暴露方法
+   */
   useImperativeHandle(cRef, () => {
     return {
       handleChangeDarkMode: () => {
@@ -14,29 +20,14 @@ const DarkModeButton = props => {
   })
 
   return (
-    <button
+    <div
       onClick={toggleDarkMode}
-      className='relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-none group'
-      style={{
-        background: isDarkMode 
-          ? 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)' 
-          : 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
-      }}
-      title={isDarkMode ? '切换到亮色模式' : '切换到暗色模式'}>
-      <span
-        className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-lg transition-all duration-300 flex items-center justify-center ${
-          isDarkMode ? 'translate-x-7' : 'translate-x-0.5'
-        }`}>
-        <i 
-          className={`text-xs transition-all duration-300 ${
-            isDarkMode 
-              ? 'text-violet-500 fas fa-moon' 
-              : 'text-amber-500 fas fa-sun'
-          }`}
-        />
-      </span>
-    </button>
+      className={`${className || ''} flex items-center`}>
+      <i
+        className={`w-6 mr-2 fas ${isDarkMode ? 'fa-sun' : 'fa-moon px-0.5'}`}
+      />
+      {isDarkMode ? 'Dark Mode' : 'Light Mode'}{' '}
+    </div>
   )
 }
-
 export default DarkModeButton

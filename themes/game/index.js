@@ -1,56 +1,62 @@
 /* eslint-disable @next/next/no-img-element */
+import Comment from '@/components/Comment'
 import { AdSlot } from '@/components/GoogleAdsense'
 import replaceSearchResult from '@/components/Mark'
+import NotionPage from '@/components/NotionPage'
 import { PWA as initialPWA } from '@/components/PWA'
+import ShareBar from '@/components/ShareBar'
 import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
 import { loadWowJS } from '@/lib/plugins/wow'
 import { deepClone, isBrowser, shuffleArray } from '@/lib/utils'
 import SmartLink from '@/components/SmartLink'
 import { useRouter } from 'next/router'
-import dynamic from 'next/dynamic'
-import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import Announcement from './components/Announcement'
+import { ArticleLock } from './components/ArticleLock'
 import BlogArchiveItem from './components/BlogArchiveItem'
 import { BlogListPage } from './components/BlogListPage'
 import { BlogListScroll } from './components/BlogListScroll'
 import BlogPostBar from './components/BlogPostBar'
 import { Footer } from './components/Footer'
+import GameEmbed from './components/GameEmbed'
+import { GameListIndexCombine } from './components/GameListIndexCombine'
+import { GameListRelate } from './components/GameListRealate'
 import { GameListRecent } from './components/GameListRecent'
+import GroupCategory from './components/GroupCategory'
+import GroupTag from './components/GroupTag'
 import Header from './components/Header'
 import { MenuList } from './components/MenuList'
-import { ArticleLock } from './components/ArticleLock'
-import RightSidebar from './components/RightSidebar'
-import PostSidebar from './components/PostSidebar'
-import CategoryTabs from './components/CategoryTabs'
-import BackToTop from './components/BackToTop'
-import MobilePostMeta from './components/MobilePostMeta'
+import PostInfo from './components/PostInfo'
+import SideBarContent from './components/SideBarContent'
+import SideBarDrawer from './components/SideBarDrawer'
 import CONFIG from './config'
 import { Style } from './style'
 
-const Comment = dynamic(() => import('@/components/Comment'), { ssr: false })
-const NotionPage = dynamic(() => import('@/components/NotionPage'))
-const GameEmbed = dynamic(() => import('./components/GameEmbed'))
-const GameListIndexCombine = dynamic(() => import('./components/GameListIndexCombine').then(mod => ({ default: mod.GameListIndexCombine })))
-const SearchModal = dynamic(() => import('./components/SearchModal'), { ssr: false })
-const PostReaction = dynamic(() => import('./components/PostReaction'), { ssr: false })
-const MobilePostDetail = dynamic(() => import('./components/MobilePostDetail'), { ssr: false })
-const PostInfo = dynamic(() => import('./components/PostInfo'), { ssr: false })
+// const AlgoliaSearchModal = dynamic(() => import('@/components/AlgoliaSearchModal'), { ssr: false })
 
+// 主题全局状态
 const ThemeGlobalGame = createContext()
 export const useGameGlobal = () => useContext(ThemeGlobalGame)
 
+/**
+ * 基础布局 采用左右两侧布局，移动端使用顶部导航栏
+
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const LayoutBase = props => {
   const {
     allNavPages,
     children,
     siteInfo,
     tagOptions,
+    currentTag,
     categoryOptions,
-    postCount,
-    notice,
-    post
+    currentCategory
   } = props
   const searchModal = useRef(null)
+  // 在列表中进行实时过滤
   const [filterKey, setFilterKey] = useState('')
 
   const [filterGames, setFilterGames] = useState(
@@ -64,23 +70,9 @@ const LayoutBase = props => {
   )
   const [recentGames, setRecentGames] = useState([])
   const [sideBarVisible, setSideBarVisible] = useState(false)
-  const { updateDarkMode } = useGlobal()
 
   useEffect(() => {
     loadWowJS()
-  }, [])
-
-  useEffect(() => {
-    const defaultAppearance = siteConfig('APPEARANCE', 'dark', CONFIG)
-    const savedDarkMode = isBrowser && localStorage.getItem('darkMode')
-    
-    if (defaultAppearance === 'dark' && savedDarkMode === null) {
-      updateDarkMode(true)
-      if (isBrowser) {
-        document.getElementsByTagName('html')[0].classList.remove('light')
-        document.getElementsByTagName('html')[0].classList.add('dark')
-      }
-    }
   }, [])
 
   return (
@@ -98,63 +90,95 @@ const LayoutBase = props => {
       }}>
       <div
         id='theme-game'
-        className={`${siteConfig('FONT_STYLE')} w-full h-full min-h-screen scroll-smooth`}>
+        className={`${siteConfig('FONT_STYLE')} w-full h-full min-h-screen justify-center dark:bg-black dark:bg-opacity-50 dark:text-gray-300 scroll-smooth`}>
         <Style />
 
+        {/* 左右布局 */}
         <div
           id='wrapper'
-          className='relative flex justify-center w-full mx-auto gap-0 max-w-[1300px] lg:pt-10 pt-4 lg:px-4 px-0'>
-          <div className='bg-white dark:bg-zinc-900 lg:rounded-xl shadow-sm flex w-full'>
-            <aside className='w-[180px] hidden lg:block flex-shrink-0 border-r border-zinc-100 dark:border-zinc-800 bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-900 dark:to-zinc-900'>
-              <div className='sticky top-8 p-4'>
-                <MenuList {...props} showSearch={!post} />
+          className={'relative flex justify-between w-full h-full mx-auto'}>
+          {/* PC端左侧 */}
+          <div className='w-52 hidden xl:block relative z-10'>
+            <div className='py-4 px-2 sticky top-0 h-screen flex flex-col justify-between'>
+              <div className='select-none'>
+                {/* 抬头logo等 */}
+                <Header siteInfo={siteInfo} />
+                {/* 菜单栏 */}
+                <MenuList {...props} />
               </div>
-            </aside>
 
-            <main className='flex-1 min-w-0 min-h-screen lg:px-5 px-3 py-6'>
-              {children}
-              <div className='py-4'>
-                <AdSlot type='in-article' />
+              {/* 左侧广告栏目 */}
+              <div className='w-full'>
+                <AdSlot />
               </div>
-              <Footer />
-            </main>
-
-            {post ? (
-              <PostSidebar post={post} />
-            ) : (
-              <RightSidebar
-                siteInfo={siteInfo}
-                tagOptions={tagOptions}
-                categoryOptions={categoryOptions}
-                postCount={postCount}
-                notice={notice}
-                posts={allNavPages}
-              />
-            )}
+            </div>
           </div>
+
+          {/* 右侧 */}
+          <main className='flex-grow w-full h-full flex flex-col min-h-screen overflow-x-auto md:p-2'>
+            <div className='flex-grow h-full'>{children}</div>
+            {/* 广告 */}
+            <div className='w-full py-4'>
+              <AdSlot type='in-article' />
+            </div>
+
+            {/* 主区域下方 导览 */}
+            <div className='w-full bg-white dark:bg-hexo-black-gray rounded-lg p-2'>
+              {/* 标签汇总             */}
+              <GroupCategory
+                categoryOptions={categoryOptions}
+                currentCategory={currentCategory}
+              />
+              <hr />
+              <GroupTag tagOptions={tagOptions} currentTag={currentTag} />
+              {/* 站点公告信息 */}
+              <Announcement {...props} className='p-2' />
+            </div>
+            <Footer />
+          </main>
         </div>
 
-        {!post && <SearchModal siteInfo={siteInfo} {...props} />}
+        <SideBarDrawer
+          isOpen={sideBarVisible}
+          onClose={() => {
+            setSideBarVisible(false)
+          }}>
+          <SideBarContent siteInfo={siteInfo} {...props} />
+        </SideBarDrawer>
       </div>
     </ThemeGlobalGame.Provider>
   )
 }
 
+/**
+ * 首页
+ * 首页是个博客列表，加上顶部嵌入一个公告
+ * @param {*} props
+ * @returns
+ */
 const LayoutIndex = props => {
   const { siteInfo } = props
   return (
     <>
-      <div className='lg:hidden mb-4'>
+      {/* 首页移动端顶部导航 */}
+      <div className='p-2 xl:hidden'>
         <Header siteInfo={siteInfo} />
       </div>
+      {/* 最近游戏 */}
       <GameListRecent />
+      {/* 游戏列表 */}
       <LayoutPostList {...props} />
     </>
   )
 }
 
+/**
+ * 博客列表
+ * @param {*} props
+ * @returns
+ */
 const LayoutPostList = props => {
-  const { posts, categoryOptions, currentCategory } = props
+  const { posts } = props
   const { filterKey } = useGameGlobal()
   let filteredBlogPosts = []
   if (filterKey && posts) {
@@ -169,7 +193,6 @@ const LayoutPostList = props => {
 
   return (
     <>
-      <CategoryTabs categories={categoryOptions} currentCategory={currentCategory} />
       <BlogPostBar {...props} />
       {siteConfig('POST_LIST_STYLE') === 'page' ? (
         <BlogListPage posts={filteredBlogPosts} {...props} />
@@ -180,6 +203,12 @@ const LayoutPostList = props => {
   )
 }
 
+/**
+ * 搜索
+ * 页面是博客列表，上方嵌入一个搜索引导条
+ * @param {*} props
+ * @returns
+ */
 const LayoutSearch = props => {
   const { keyword, posts } = props
   useEffect(() => {
@@ -195,6 +224,7 @@ const LayoutSearch = props => {
     }
   }, [])
 
+  // 在列表中进行实时过滤
   const { filterKey } = useGameGlobal()
   let filteredBlogPosts = []
   if (filterKey && posts) {
@@ -218,25 +248,16 @@ const LayoutSearch = props => {
   )
 }
 
+/**
+ * 归档
+ * @param {*} props
+ * @returns
+ */
 const LayoutArchive = props => {
   const { archivePosts } = props
-  const totalPosts = Object.values(archivePosts || {}).reduce((sum, posts) => sum + posts.length, 0)
-  
   return (
     <>
-      <div className='mb-6'>
-        <div className='flex items-center gap-3 mb-2'>
-          <div className='w-10 h-10 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center'>
-            <i className='fas fa-archive text-violet-500'></i>
-          </div>
-          <div>
-            <h1 className='text-xl font-bold text-zinc-800 dark:text-zinc-100'>归档</h1>
-            <p className='text-xs text-zinc-400 dark:text-zinc-500'>共 {totalPosts} 篇文章</p>
-          </div>
-        </div>
-      </div>
-      
-      <div className='space-y-8'>
+      <div className='mb-10 pb-20 md:py-12 p-3  min-h-screen w-full'>
         {Object.keys(archivePosts).map(archiveTitle => (
           <BlogArchiveItem
             key={archiveTitle}
@@ -249,36 +270,33 @@ const LayoutArchive = props => {
   )
 }
 
+/**
+ * 文章详情
+ * @param {*} props
+ * @returns
+ */
 const LayoutSlug = props => {
   const { setRecentGames } = useGameGlobal()
-  const { post, siteInfo, allNavPages, lock, validPassword, posts } = props
+  const { post, siteInfo, allNavPages, recommendPosts, lock, validPassword } =
+    props
 
+  const relateGames = recommendPosts
   const randomGames = shuffleArray(deepClone(allNavPages))
 
-  const getPrevNextPosts = useCallback(() => {
-    if (!posts || !post) return { prevPost: null, nextPost: null }
-    
-    const currentIndex = posts.findIndex(p => p.id === post.id || p.slug === post.slug)
-    
-    return {
-      prevPost: currentIndex > 0 ? posts[currentIndex - 1] : null,
-      nextPost: currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null
-    }
-  }, [posts, post])
-
-  const { prevPost, nextPost } = getPrevNextPosts()
-
+  // 初始化可安装应用
   initialPWA(post, siteInfo)
 
   useEffect(() => {
+    // 更新最新游戏
     const recentGames = localStorage.getItem('recent_games')
       ? JSON.parse(localStorage.getItem('recent_games'))
       : []
 
     const existedIndex = recentGames.findIndex(item => item?.id === post?.id)
     if (existedIndex === -1) {
-      recentGames.unshift(post)
+      recentGames.unshift(post) // 将游戏插入到数组头部
     } else {
+      // 如果游戏已存在于数组中，将其移至数组头部
       const existingGame = recentGames.splice(existedIndex, 1)[0]
       recentGames.unshift(existingGame)
     }
@@ -293,57 +311,58 @@ const LayoutSlug = props => {
 
       {!lock && post && (
         <div id='article-wrapper'>
-          <div className='lg:hidden mb-4'>
-            <Header siteInfo={siteInfo} showSearch={false} />
-          </div>
-          
-          <MobilePostDetail 
-            post={post} 
-            prevPost={prevPost}
-            nextPost={nextPost}
-            toc={post?.toc || []}
-          />
-          
-          <div className='hidden xl:block'>
-            <PostInfo post={post} />
-          </div>
-          
           <div className='game-detail-wrapper w-full grow flex'>
-            <div className={`w-full`}>
+            <div className={`w-full md:py-2`}>
+              {/* 游戏窗口 */}
               <GameEmbed post={post} siteInfo={siteInfo} />
 
-              <div className='game-info mt-14 md:mt-0'>
+              {/* 资讯 */}
+              <div className='game-info  dark:text-white py-2 px-2 md:px-0 mt-14 md:mt-0'>
+                {/* 关联游戏 */}
+                <div className='w-full'>
+                  <GameListRelate posts={relateGames} />
+                </div>
+
+                {/* 详情描述 */}
                 {post && (
-                  <div>
+                  <div className='bg-white shadow-md my-2 p-4 rounded-md dark:bg-black'>
+                    <PostInfo post={post} />
                     <NotionPage post={post} />
-                    <MobilePostMeta post={post} />
+                    {/* 广告嵌入 */}
                     <AdSlot />
-                    <div className='hidden xl:block mt-8'>
-                      <PostReaction post={post} />
-                      <Comment frontMatter={post} />
-                    </div>
+                    {/* 分享栏目 */}
+                    <ShareBar post={post} />
+                    {/* 评论区 */}
+                    <Comment frontMatter={post} />
                   </div>
                 )}
               </div>
             </div>
           </div>
 
+          {/* 其它游戏列表 */}
           <GameListIndexCombine posts={randomGames} />
         </div>
       )}
-      <BackToTop />
     </>
   )
 }
 
+/**
+ * 404 页面
+ * @param {*} props
+ * @returns
+ */
 const Layout404 = props => {
   const router = useRouter()
   const { locale } = useGlobal()
   useEffect(() => {
+    // 延时3秒如果加载失败就返回首页
     setTimeout(() => {
       const article = isBrowser && document.getElementById('article-wrapper')
       if (!article) {
         router.push('/').then(() => {
+          // console.log('找不到页面', router.asPath)
         })
       }
     }, 3000)
@@ -351,7 +370,7 @@ const Layout404 = props => {
 
   return (
     <>
-      <div className='text-black w-full h-screen text-center justify-center content-center items-center flex flex-col'>
+      <div className='md:-mt-20 text-black w-full h-screen text-center justify-center content-center items-center flex flex-col'>
         <div className='dark:text-gray-200'>
           <h2 className='inline-block border-r-2 border-gray-600 mr-2 px-3 py-2 align-top'>
             <i className='mr-2 fas fa-spinner animate-spin' />
@@ -366,111 +385,61 @@ const Layout404 = props => {
   )
 }
 
+/**
+ * 文章分类列表
+ * @param {*} props
+ * @returns
+ */
 const LayoutCategoryIndex = props => {
-  const { categoryOptions, allNavPages } = props
-
-  const getCategoryCover = categoryName => {
-    const categoryPosts = allNavPages?.filter(post => post.category === categoryName)
-    if (categoryPosts && categoryPosts.length > 0) {
-      return categoryPosts[0].pageCoverThumbnail || categoryPosts[0].pageCover
-    }
-    return null
-  }
+  const { categoryOptions } = props
 
   return (
     <>
-      <div className='mb-6'>
-        <h1 className='text-2xl font-bold text-zinc-800 dark:text-zinc-100 mb-2'>
-          分类目录
-        </h1>
-        <p className='text-sm text-zinc-500 dark:text-zinc-400'>
-          共 {categoryOptions?.length || 0} 个分类
-        </p>
-      </div>
-      
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-        {categoryOptions?.map((category, index) => (
-          <CategoryCard key={category.name} category={category} getCategoryCover={getCategoryCover} />
-        ))}
+      <div
+        id='category-list'
+        className='duration-200 flex flex-wrap my-4 gap-2'>
+        {categoryOptions?.map(category => {
+          return (
+            <SmartLink
+              key={category.name}
+              href={`/category/${category.name}`}
+              passHref
+              legacyBehavior>
+              <div
+                className={
+                  'bg-white rounded-lg hover:text-black dark:hover:text-white dark:text-gray-300 dark:hover:bg-gray-600 px-5 cursor-pointer py-2 hover:bg-gray-100'
+                }>
+                {/* <i className='mr-4 fas fa-folder' /> */}
+                {category.name}({category.count})
+              </div>
+            </SmartLink>
+          )
+        })}
       </div>
     </>
   )
 }
 
-const CategoryCard = ({ category, getCategoryCover }) => {
-  const cover = getCategoryCover(category.name)
-  const [imageError, setImageError] = useState(false)
-
-  return (
-    <SmartLink
-      href={`/category/${category.name}`}
-      className='group relative block aspect-[4/3] rounded-xl overflow-hidden cursor-pointer bg-zinc-100 dark:bg-zinc-800'>
-      {cover && !imageError ? (
-        <img
-          src={cover}
-          alt={category.name}
-          className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
-          onError={() => setImageError(true)}
-        />
-      ) : (
-        <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
-          <i className='fas fa-folder text-white/30 text-4xl'></i>
-        </div>
-      )}
-      <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
-      <div className='absolute bottom-0 left-0 right-0 p-4'>
-        <h3 className='text-lg font-bold text-white mb-1 truncate'>
-          {category.name}
-        </h3>
-        <p className='text-sm text-white/80'>
-          {category.count} 篇文章
-        </p>
-      </div>
-    </SmartLink>
-  )
-}
-
+/**
+ * 文章标签列表
+ * @param {*} props
+ * @returns
+ */
 const LayoutTagIndex = props => {
   const { tagOptions } = props
-  
-  const tagColors = [
-    'bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400',
-    'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
-    'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400',
-    'bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400',
-    'bg-pink-100 dark:bg-pink-500/20 text-pink-600 dark:text-pink-400',
-    'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400',
-    'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400',
-    'bg-cyan-100 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400',
-    'bg-teal-100 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400',
-    'bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400'
-  ]
-
   return (
     <>
-      <div className='mb-6'>
-        <h1 className='text-2xl font-bold text-zinc-800 dark:text-zinc-100 mb-2'>
-          标签云
-        </h1>
-        <p className='text-sm text-zinc-500 dark:text-zinc-400'>
-          共 {tagOptions?.length || 0} 个标签
-        </p>
-      </div>
-      
-      <div className='bg-white dark:bg-zinc-900 rounded-lg p-5 border border-zinc-100 dark:border-zinc-800'>
-        <div className='flex flex-wrap gap-2'>
-          {tagOptions?.map((tag, index) => {
-            const colorClass = tagColors[index % tagColors.length]
+      <div>
+        <div id='tags-list' className='duration-200 flex flex-wrap my-4 gap-2'>
+          {tagOptions.map(tag => {
             return (
               <SmartLink
                 key={tag.name}
                 href={`/tag/${encodeURIComponent(tag.name)}`}
-                className={`group px-4 py-2 rounded-lg text-sm transition-all duration-300 hover:shadow-md ${colorClass}`}>
-                <i className='fas fa-hashtag mr-1 text-xs opacity-60'></i>
-                {tag.name}
-                {tag.count && (
-                  <span className='ml-1.5 text-xs opacity-70'>·{tag.count}</span>
-                )}
+                passHref
+                className={` select-none cursor-pointer flex bg-white rounded-lg hover:bg-gray-500 hover:text-white duration-200 mr-2 py-1 px-2 text-xs whitespace-nowrap dark:hover:text-white  hover:shadow-xl  dark:bg-gray-800`}>
+                <i className='mr-1 fas fa-tag' />{' '}
+                {tag.name + (tag.count ? `(${tag.count})` : '')}{' '}
               </SmartLink>
             )
           })}

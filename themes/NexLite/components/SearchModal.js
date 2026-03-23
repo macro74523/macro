@@ -1,17 +1,17 @@
 import { siteConfig } from '@/lib/config'
 import { deepClone } from '@/lib/utils'
 import { useEffect, useRef, useState } from 'react'
-import { useGameGlobal } from '..'
+import { useNexLiteGlobal } from '..'
 import CONFIG from '../config'
 import LazyImage from '@/components/LazyImage'
 import SmartLink from '@/components/SmartLink'
 
 export default function SearchModal({ allNavPages, siteInfo }) {
-  const { sideBarVisible, setSideBarVisible, filterGames, setFilterGames } =
-    useGameGlobal()
+  const { sideBarVisible, setSideBarVisible, filterPosts, setFilterPosts } =
+    useNexLiteGlobal()
   const inputRef = useRef(null)
   const [searchValue, setSearchValue] = useState('')
-  const allGames = deepClone(allNavPages) || []
+  const allPosts = deepClone(allNavPages) || []
   
   useEffect(() => {
     if (sideBarVisible) {
@@ -29,11 +29,11 @@ export default function SearchModal({ allNavPages, siteInfo }) {
   }, [sideBarVisible])
 
   useEffect(() => {
-    if (allGames && allGames.length > 0) {
-      setFilterGames(
-        allGames?.filter(item =>
+    if (allPosts && allPosts.length > 0) {
+      setFilterPosts(
+        allPosts?.filter(item =>
           item.tags?.some(
-            t => t === siteConfig('GAME_RECOMMEND_TAG', 'Recommend', CONFIG)
+            t => t === siteConfig('NEXLITE_RECOMMEND_TAG', 'Recommend', CONFIG)
           )
         )
       )
@@ -45,17 +45,17 @@ export default function SearchModal({ allNavPages, siteInfo }) {
     setSearchValue(search)
     
     if (!search || search === '') {
-      setFilterGames(
-        allGames?.filter(item =>
+      setFilterPosts(
+        allPosts?.filter(item =>
           item.tags?.some(
-            t => t === siteConfig('GAME_RECOMMEND_TAG', 'Recommend', CONFIG)
+            t => t === siteConfig('NEXLITE_RECOMMEND_TAG', 'Recommend', CONFIG)
           )
         )
       )
       return
     }
     
-    const filtered = allGames?.filter(item => {
+    const filtered = allPosts?.filter(item => {
       return (
         item.title?.toLowerCase().includes(search.toLowerCase()) ||
         item.summary?.toLowerCase().includes(search.toLowerCase()) ||
@@ -64,7 +64,7 @@ export default function SearchModal({ allNavPages, siteInfo }) {
       )
     })
 
-    setFilterGames(deepClone(filtered))
+    setFilterPosts(deepClone(filtered))
   }
 
   const handleKeyDown = e => {
@@ -116,7 +116,7 @@ export default function SearchModal({ allNavPages, siteInfo }) {
           <div className='flex items-center justify-between mt-3 text-xs text-zinc-400'>
             <span>
               {searchValue ? (
-                <>找到 <span className='text-violet-500 font-medium'>{filterGames?.length || 0}</span> 个结果</>
+                <>找到 <span className='text-violet-500 font-medium'>{filterPosts?.length || 0}</span> 个结果</>
               ) : (
                 '输入关键词开始搜索'
               )}
@@ -131,9 +131,9 @@ export default function SearchModal({ allNavPages, siteInfo }) {
         </div>
 
         <div className='max-h-[65vh] overflow-y-auto'>
-          {filterGames && filterGames.length > 0 ? (
+          {filterPosts && filterPosts.length > 0 ? (
             <div className='p-4 grid grid-cols-2 sm:grid-cols-3 gap-3'>
-              {filterGames.slice(0, 9).map((item, index) => (
+              {filterPosts.slice(0, 9).map((item, index) => (
                 <SearchResultItem 
                   key={item.id || index} 
                   item={item} 
@@ -152,9 +152,9 @@ export default function SearchModal({ allNavPages, siteInfo }) {
               <p className='text-sm'>开始搜索你的内容</p>
             </div>
           )}
-          {filterGames && filterGames.length > 9 && (
+          {filterPosts && filterPosts.length > 9 && (
             <div className='text-center py-4 text-sm text-zinc-400 border-t border-zinc-100 dark:border-zinc-800'>
-              还有 {filterGames.length - 9} 个结果...
+              还有 {filterPosts.length - 9} 个结果...
             </div>
           )}
         </div>
