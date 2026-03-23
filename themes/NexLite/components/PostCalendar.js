@@ -6,14 +6,35 @@ export default function PostCalendar({ posts }) {
     if (!posts || posts.length === 0) return { weeks: [], months: [], total: 0 }
 
     const today = new Date()
+    today.setHours(23, 59, 59, 999)
+    
     const oneYearAgo = new Date(today)
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+    oneYearAgo.setHours(0, 0, 0, 0)
+
+    const parseDate = (dateStr) => {
+      if (!dateStr) return null
+      
+      let match = dateStr.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/)
+      if (match) {
+        return `${match[1]}-${match[2].padStart(2, '0')}-${match[3].padStart(2, '0')}`
+      }
+      
+      match = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/)
+      if (match) {
+        return `${match[1]}-${match[2].padStart(2, '0')}-${match[3].padStart(2, '0')}`
+      }
+      
+      return null
+    }
 
     const dateCount = {}
     posts.forEach(post => {
       if (post.publishDay) {
-        const date = new Date(post.publishDay).toISOString().split('T')[0]
-        dateCount[date] = (dateCount[date] || 0) + 1
+        const dateStr = parseDate(post.publishDay)
+        if (dateStr) {
+          dateCount[dateStr] = (dateCount[dateStr] || 0) + 1
+        }
       }
     })
 
@@ -29,19 +50,22 @@ export default function PostCalendar({ posts }) {
 
     let lastMonth = -1
     while (currentDate <= today) {
-      const dateStr = currentDate.toISOString().split('T')[0]
+      const year = currentDate.getFullYear()
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0')
+      const day = String(currentDate.getDate()).padStart(2, '0')
+      const dateStr = `${year}-${month}-${day}`
       const count = dateCount[dateStr] || 0
       
       currentWeek.push({ date: dateStr, count })
 
-      const month = currentDate.getMonth()
-      if (month !== lastMonth && currentWeek.length > 0) {
+      const monthNum = currentDate.getMonth()
+      if (monthNum !== lastMonth && currentWeek.length > 0) {
         months.push({
-          month: month,
+          month: monthNum,
           label: currentDate.toLocaleDateString('zh-CN', { month: 'short' }),
           weekIndex: weeks.length
         })
-        lastMonth = month
+        lastMonth = monthNum
       }
 
       if (currentWeek.length === 7) {

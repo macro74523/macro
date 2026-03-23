@@ -22,15 +22,12 @@ export default function RandomPostButton({ posts }) {
   }
 
   return (
-    <div className='pt-6 border-t border-zinc-100 dark:border-zinc-800'>
-      <button
-        onClick={handleRandomPost}
-        disabled={!posts || posts.length === 0}
-        className='w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white rounded-lg transition-all duration-300 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed group'
-      >
-        <i className={`fas fa-shuffle ${isSpinning ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-500`}></i>
-        <span className='font-medium text-sm'>随机阅读</span>
-      </button>
-    </div>
+    <button
+      onClick={handleRandomPost}
+      disabled={!posts || posts.length === 0}
+      className='w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 dark:text-zinc-500 hover:text-violet-500 dark:hover:text-violet-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed'
+      title='随机阅读'>
+      <i className={`fas fa-shuffle ${isSpinning ? 'animate-spin' : ''}`} />
+    </button>
   )
 }
