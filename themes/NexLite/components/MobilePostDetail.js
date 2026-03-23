@@ -341,22 +341,6 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
         </div>
       )}
 
-      <div className='px-1 pt-14'>
-        <h1 className='font-bold text-2xl text-zinc-800 dark:text-zinc-100 mb-1 leading-snug'>
-          {siteConfig('POST_TITLE_ICON') && <NotionIcon icon={post?.pageIcon} />}
-          {post?.title}
-        </h1>
-
-        {serverURL && (
-          <div className='flex justify-end'>
-            <div className='inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100/80 dark:bg-zinc-800/80 text-xs text-zinc-500 dark:text-zinc-400'>
-              <i className='far fa-eye text-[11px]'></i>
-              <span className='waline-pageview-count font-medium' data-path={articlePath}>--</span>
-            </div>
-          </div>
-        )}
-      </div>
-
       <div className='fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-100 dark:border-zinc-800 px-4 py-2 safe-area-bottom'>
         <div className='flex items-center justify-around'>
           <button 

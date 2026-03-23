@@ -7,6 +7,7 @@ import { useGlobal } from '@/lib/global'
 import { loadWowJS } from '@/lib/plugins/wow'
 import { deepClone, isBrowser, shuffleArray } from '@/lib/utils'
 import SmartLink from '@/components/SmartLink'
+import NotionIcon from '@/components/NotionIcon'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react'
@@ -23,9 +24,9 @@ import RightSidebar from './components/RightSidebar'
 import PostSidebar from './components/PostSidebar'
 import CategoryTabs from './components/CategoryTabs'
 import BackToTop from './components/BackToTop'
-import MobilePostMeta from './components/MobilePostMeta'
 import CONFIG from './config'
 import { Style } from './style'
+import { useWalinePageview } from './hooks/useWalinePageview'
 
 const Comment = dynamic(() => import('@/components/Comment'), { ssr: false })
 const NotionPage = dynamic(() => import('@/components/NotionPage'))
@@ -162,20 +163,31 @@ const LayoutIndex = props => {
 }
 
 const HomeComment = () => {
+  const [isOpen, setIsOpen] = useState(false)
   const homePost = { id: '/', title: '留言板', comment: 'Show' }
   
   return (
     <div id='home-comment' className='mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800'>
-      <div className='flex items-center gap-3 mb-4'>
-        <div className='w-10 h-10 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center'>
-          <i className='fas fa-envelope text-violet-500'></i>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className='w-full flex items-center justify-between gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors'>
+        <div className='flex items-center gap-3'>
+          <div className='w-10 h-10 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center'>
+            <i className='fas fa-envelope text-violet-500'></i>
+          </div>
+          <div className='text-left'>
+            <h3 className='text-base font-bold text-zinc-800 dark:text-zinc-100'>留言板</h3>
+            <p className='text-xs text-zinc-400 dark:text-zinc-500'>欢迎留言交流，无需登录即可评论</p>
+          </div>
         </div>
-        <div>
-          <h3 className='text-lg font-bold text-zinc-800 dark:text-zinc-100'>留言板</h3>
-          <p className='text-xs text-zinc-400 dark:text-zinc-500'>欢迎留言交流，无需登录即可评论</p>
+        <i className={`fas fa-chevron-down text-zinc-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}></i>
+      </button>
+      
+      {isOpen && (
+        <div className='mt-4 animate-fadeIn'>
+          <Comment frontMatter={homePost} />
         </div>
-      </div>
-      <Comment frontMatter={homePost} />
+      )}
     </div>
   )
 }
@@ -264,6 +276,26 @@ const LayoutArchive = props => {
 const LayoutSlug = props => {
   const { setRecentPosts } = useNexLiteGlobal()
   const { post, siteInfo, allNavPages, lock, validPassword, posts } = props
+  const serverURL = siteConfig('COMMENT_WALINE_SERVER_URL')
+  const articlePath = post?.href
+  const [showRecommend, setShowRecommend] = useState(false)
+
+  useWalinePageview(articlePath)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY
+      const windowHeight = window.innerHeight
+      const docHeight = document.documentElement.scrollHeight
+      
+      if (scrollTop + windowHeight >= docHeight - 500) {
+        setShowRecommend(true)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const randomPosts = shuffleArray(deepClone(allNavPages))
 
@@ -312,19 +344,72 @@ const LayoutSlug = props => {
             toc={post?.toc || []}
           />
           
-          <div className='hidden xl:block'>
-            <PostInfo post={post} />
-          </div>
-          
           <div className='post-detail-wrapper w-full grow flex'>
             <div className={`w-full`}>
               <PostEmbed post={post} siteInfo={siteInfo} />
 
-              <div className='post-info mt-14 md:mt-0'>
+              <div className='post-info'>
                 {post && (
                   <div>
                     <NotionPage post={post} />
-                    <MobilePostMeta post={post} />
+                    
+                    <div className='xl:hidden mt-8 px-1 mb-24'>
+                      <h1 className='font-bold text-2xl text-zinc-800 dark:text-zinc-100 mb-4 leading-snug'>
+                        {siteConfig('POST_TITLE_ICON') && <NotionIcon icon={post?.pageIcon} />}
+                        {post?.title}
+                      </h1>
+                      
+                      <div className='flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 mb-3'>
+                        {post?.publishDay && (
+                          <span className='flex items-center gap-1'>
+                            <i className='far fa-calendar text-[10px]'></i>
+                            {post.publishDay}
+                          </span>
+                        )}
+                        {post?.wordCount && (
+                          <span className='flex items-center gap-1'>
+                            <i className='fas fa-file-word text-[10px]'></i>
+                            {post.wordCount} 字
+                          </span>
+                        )}
+                        {post?.readTime && (
+                          <span className='flex items-center gap-1'>
+                            <i className='far fa-clock text-[10px]'></i>
+                            {post.readTime}
+                          </span>
+                        )}
+                        {serverURL && (
+                          <span className='flex items-center gap-1'>
+                            <i className='far fa-eye text-[10px]'></i>
+                            <span className='waline-pageview-count font-medium' data-path={post?.href}>--</span>
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className='flex flex-wrap items-center gap-2'>
+                        {post?.category && (
+                          <SmartLink 
+                            href={`/category/${post.category}`}
+                            className='inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-500/10 dark:bg-violet-500/20 text-xs text-violet-600 dark:text-violet-400 hover:bg-violet-500/20 dark:hover:bg-violet-500/30 transition-colors'>
+                            <i className='fas fa-folder text-[10px]'></i>
+                            {post.category}
+                          </SmartLink>
+                        )}
+                        {post?.tags && post.tags.length > 0 && post.tags.slice(0, 5).map((tag, index) => (
+                          <SmartLink
+                            key={index}
+                            href={`/tag/${encodeURIComponent(tag)}`}
+                            className='px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 rounded-full text-xs hover:bg-violet-100 dark:hover:bg-violet-500/20 hover:text-violet-500 transition-colors'>
+                            #{tag}
+                          </SmartLink>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className='hidden xl:block mt-8'>
+                      <PostInfo post={post} />
+                    </div>
+                    
                     <AdSlot />
                     <div className='hidden xl:block mt-8'>
                       <PostReaction post={post} />
@@ -336,7 +421,7 @@ const LayoutSlug = props => {
             </div>
           </div>
 
-          <PostListIndexCombine posts={randomPosts} />
+          {showRecommend && <PostListIndexCombine posts={randomPosts} />}
           <MobilePostFooter siteInfo={siteInfo} />
         </div>
       )}

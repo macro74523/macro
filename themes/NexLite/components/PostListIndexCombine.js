@@ -5,13 +5,13 @@ import { useState, useMemo, memo } from 'react'
 export const PostListIndexCombine = memo(function PostListIndexCombine({ posts, maxCount = 3 }) {
   const displayPosts = useMemo(() => {
     if (!posts || posts.length === 0) return []
-    return posts.slice(0, maxCount)
+    return posts.filter(post => post && post.id).slice(0, maxCount)
   }, [posts, maxCount])
 
   if (displayPosts.length === 0) return null
 
   return (
-    <div className='mt-6'>
+    <div className='mt-6 animate-fadeIn'>
       <h3 className='text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-3 flex items-center gap-1.5'>
         <i className='fas fa-compass text-violet-500 text-xs'></i>
         更多推荐

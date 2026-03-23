@@ -16,7 +16,7 @@ export const BlogListPage = props => {
         <ArticleList {...props} />
       </div>
 
-      <PaginationSimple page={page} showNext={showNext} />
+      <PaginationSimple page={page} totalPage={totalPage} showNext={showNext} />
     </>
   )
 }

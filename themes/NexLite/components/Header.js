@@ -20,7 +20,7 @@ export default function Header({ siteInfo, showSearch = true }) {
       {showSearch && (
         <button
           onClick={() => setSideBarVisible(true)}
-          className='absolute top-2 right-0 w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 dark:text-zinc-500 hover:text-violet-500 dark:hover:text-violet-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all'
+          className='absolute top-0 right-0 w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 dark:text-zinc-500 hover:text-violet-500 dark:hover:text-violet-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all'
           title='搜索'>
           <i className='fas fa-search text-sm' />
         </button>

@@ -9,7 +9,7 @@ export const PostListRecent = memo(function PostListRecent({ maxCount = 10 }) {
   
   const displayPosts = useMemo(() => {
     if (!recentPosts || recentPosts.length === 0) return []
-    return recentPosts.slice(0, maxCount)
+    return recentPosts.filter(post => post && post.id).slice(0, maxCount)
   }, [recentPosts, maxCount])
 
   if (displayPosts.length === 0 || !isVisible) {
