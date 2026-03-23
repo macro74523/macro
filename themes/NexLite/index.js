@@ -37,9 +37,7 @@ const MobilePostDetail = dynamic(() => import('./components/MobilePostDetail'), 
 const PostInfo = dynamic(() => import('./components/PostInfo'), { ssr: false })
 const MobilePostFooter = dynamic(() => import('./components/MobilePostFooter'), { ssr: false })
 const Danmaku = dynamic(() => import('./components/Danmaku'), { ssr: false })
-const DanmakuModal = dynamic(() => import('./components/DanmakuModal'), { ssr: false })
 
-// Helper function to filter posts by keyword
 const filterPostsByKeyword = (posts, filterKey) => {
   if (!filterKey || !posts) {
     return posts || []
@@ -66,6 +64,7 @@ const LayoutBase = props => {
     post
   } = props
   const searchModal = useRef(null)
+  const commentRef = useRef(null)
   const [filterKey, setFilterKey] = useState('')
 
   const [filterPosts, setFilterPosts] = useState(() => {
@@ -77,8 +76,6 @@ const LayoutBase = props => {
   })
   const [recentPosts, setRecentPosts] = useState([])
   const [sideBarVisible, setSideBarVisible] = useState(false)
-  const [danmakuModalOpen, setDanmakuModalOpen] = useState(false)
-  const [danmakuList, setDanmakuList] = useState([])
   const { updateDarkMode } = useGlobal()
 
   useEffect(() => {
@@ -98,22 +95,14 @@ const LayoutBase = props => {
     }
   }, [])
 
-  const openDanmakuModal = () => {
-    setDanmakuModalOpen(true)
-  }
-
-  const closeDanmakuModal = () => {
-    setDanmakuModalOpen(false)
-  }
-
-  const addDanmaku = (text) => {
-    const newItem = {
-      id: Date.now(),
-      text,
-      time: new Date().toISOString()
+  const scrollToComment = useCallback(() => {
+    if (isBrowser) {
+      const commentEl = document.getElementById('home-comment')
+      if (commentEl) {
+        commentEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
     }
-    setDanmakuList(prev => [newItem, ...prev.slice(-50)])
-  }
+  }, [])
 
   return (
     <ThemeGlobalNexLite.Provider
@@ -127,19 +116,14 @@ const LayoutBase = props => {
         setFilterPosts,
         sideBarVisible,
         setSideBarVisible,
-        openDanmakuModal
+        scrollToComment
       }}>
       <div
         id='theme-nexlite'
         className={`${siteConfig('FONT_STYLE')} w-full h-full min-h-screen scroll-smooth`}>
         <Style />
 
-        <Danmaku danmakuList={danmakuList} enabled={!post && danmakuList.length > 0} />
-        <DanmakuModal 
-          isOpen={danmakuModalOpen} 
-          onClose={closeDanmakuModal}
-          onSubmit={addDanmaku}
-        />
+        <Danmaku enabled={!post} />
 
         <div
           id='wrapper'
@@ -185,7 +169,27 @@ const LayoutIndex = props => {
     <>
       <PostListRecent />
       <LayoutPostList {...props} />
+      <HomeComment />
     </>
+  )
+}
+
+const HomeComment = () => {
+  const homePost = { id: '/', title: '主页弹幕', comment: 'Show' }
+  
+  return (
+    <div id='home-comment' className='mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800'>
+      <div className='flex items-center gap-3 mb-4'>
+        <div className='w-10 h-10 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center'>
+          <i className='fas fa-comments text-violet-500'></i>
+        </div>
+        <div>
+          <h3 className='text-lg font-bold text-zinc-800 dark:text-zinc-100'>弹幕区</h3>
+          <p className='text-xs text-zinc-400 dark:text-zinc-500'>发送评论，让弹幕飘起来~</p>
+        </div>
+      </div>
+      <Comment frontMatter={homePost} />
+    </div>
   )
 }
 

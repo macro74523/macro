@@ -1,8 +1,7 @@
 import { siteConfig } from '@/lib/config'
 import SmartLink from '@/components/SmartLink'
-import DanmakuButton from './DanmakuButton'
 
-export default function Logo({ siteInfo, showDanmaku = true, onDanmakuClick }) {
+export default function Logo({ siteInfo }) {
   return (
     <SmartLink
       passHref
@@ -14,15 +13,11 @@ export default function Logo({ siteInfo, showDanmaku = true, onDanmakuClick }) {
             src={siteInfo.icon} 
             alt='logo' 
             className='w-16 h-16 rounded-full shadow-sm mb-3'
+            data-no-lightbox='true'
           />
         ) : (
           <div className='w-16 h-16 rounded-full pix-gradient-bg flex items-center justify-center shadow-sm mb-3'>
             <i className='fas fa-gamepad text-white text-2xl'></i>
-          </div>
-        )}
-        {showDanmaku && (
-          <div className='absolute -top-1 -right-1'>
-            <DanmakuButton onClick={onDanmakuClick} />
           </div>
         )}
       </div>

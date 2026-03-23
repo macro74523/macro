@@ -33,7 +33,7 @@ export default function CategoryTabs({ categories, currentCategory }) {
   const [showRightArrow, setShowRightArrow] = useState(false)
   const scrollRef = useRef(null)
   const router = useRouter()
-  const { openDanmakuModal } = useNexLiteGlobal()
+  const { scrollToComment } = useNexLiteGlobal()
 
   const defaultTabs = [
     { name: '推荐', href: '/', icon: 'fas fa-fire' },
@@ -168,7 +168,7 @@ export default function CategoryTabs({ categories, currentCategory }) {
         </div>
 
         <div className='lg:hidden flex-shrink-0 pl-2 pr-1'>
-          <DanmakuButton onClick={openDanmakuModal} />
+          <DanmakuButton onClick={scrollToComment} />
         </div>
 
         {showRightArrow && (

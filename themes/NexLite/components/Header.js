@@ -3,19 +3,19 @@ import { useNexLiteGlobal } from '..'
 import Logo from './Logo'
 
 const socialIcons = [
-  { key: 'XIAOHONGSHU', icon: 'fa-heart', title: '小红书', color: 'hover:text-red-500 dark:hover:text-red-400', brand: false },
+  { key: 'XIAOHONGSHU', icon: 'fa-book', title: '小红书', color: 'hover:text-red-500 dark:hover:text-red-400', brand: false },
   { key: 'WEHCHAT_PUBLIC', icon: 'fa-weixin', title: '微信', color: 'hover:text-green-500 dark:hover:text-green-400', brand: true },
   { key: 'DOUYIN', icon: 'fa-tiktok', title: '抖音', color: 'hover:text-black dark:hover:text-white', brand: true },
   { key: 'BILIBILI', icon: 'fa-bilibili', title: 'B站', color: 'hover:text-pink-500 dark:hover:text-pink-400', brand: true },
 ]
 
 export default function Header({ siteInfo, showSearch = true }) {
-  const { setSideBarVisible, openDanmakuModal } = useNexLiteGlobal()
+  const { setSideBarVisible, scrollToComment } = useNexLiteGlobal()
   const showRss = siteConfig('ENABLE_RSS')
 
   return (
     <header className='z-20 mb-4 relative'>
-      <Logo siteInfo={siteInfo} onDanmakuClick={openDanmakuModal} />
+      <Logo siteInfo={siteInfo} />
       
       {showSearch && (
         <button

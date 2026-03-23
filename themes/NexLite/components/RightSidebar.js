@@ -12,7 +12,7 @@ const NotionPage = dynamic(() => import('@/components/NotionPage'))
 
 export default function RightSidebar(props) {
   const { siteInfo, tagOptions, categoryOptions, postCount, notice, posts } = props
-  const { openDanmakuModal } = useNexLiteGlobal()
+  const { scrollToComment } = useNexLiteGlobal()
 
   const tags = tagOptions?.slice(0, 8) || []
 
@@ -20,7 +20,7 @@ export default function RightSidebar(props) {
     <aside className='w-[280px] hidden xl:block flex-shrink-0 border-l border-zinc-100 dark:border-zinc-800'>
       <div className='sticky top-8 p-5 space-y-6'>
         <div className='flex items-center justify-end gap-2'>
-          <DanmakuButton onClick={openDanmakuModal} />
+          <DanmakuButton onClick={scrollToComment} />
           <RandomPostButton posts={posts} />
           <DarkModeButton />
         </div>

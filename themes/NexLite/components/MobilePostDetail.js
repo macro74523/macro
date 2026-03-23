@@ -149,7 +149,7 @@ export default function MobilePostDetail({ post, prevPost, nextPost, toc }) {
   useEffect(() => {
     const handleImageClick = (e) => {
       const img = e.target.closest('img')
-      if (img && img.tagName === 'IMG') {
+      if (img && img.tagName === 'IMG' && !img.hasAttribute('data-no-lightbox')) {
         setModalImage(img.src)
         setShowImageModal(true)
       }
