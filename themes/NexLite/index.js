@@ -35,6 +35,7 @@ const SearchModal = dynamic(() => import('./components/SearchModal'), { ssr: fal
 const PostReaction = dynamic(() => import('./components/PostReaction'), { ssr: false })
 const MobilePostDetail = dynamic(() => import('./components/MobilePostDetail'), { ssr: false })
 const PostInfo = dynamic(() => import('./components/PostInfo'), { ssr: false })
+const MobilePostFooter = dynamic(() => import('./components/MobilePostFooter'), { ssr: false })
 
 // Helper function to filter posts by keyword
 const filterPostsByKeyword = (posts, filterKey) => {
@@ -285,10 +286,6 @@ const LayoutSlug = props => {
 
       {!lock && post && (
         <div id='article-wrapper'>
-          <div className='lg:hidden mb-4'>
-            <Header siteInfo={siteInfo} showSearch={false} />
-          </div>
-          
           <MobilePostDetail 
             post={post} 
             prevPost={prevPost}
@@ -321,6 +318,7 @@ const LayoutSlug = props => {
           </div>
 
           <PostListIndexCombine posts={randomPosts} />
+          <MobilePostFooter siteInfo={siteInfo} />
         </div>
       )}
       <BackToTop />
