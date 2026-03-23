@@ -12,7 +12,7 @@ export const ArticleList = memo(function ArticleList({ posts, loading = false, s
   if (!posts || posts.length === 0) return null
 
   return (
-    <div className='columns-2 gap-3 space-y-3'>
+    <div className='columns-2 gap-2 space-y-2'>
       {posts.map((post, index) => (
         <ArticleCard key={post.id || index} post={post} />
       ))}
@@ -86,11 +86,11 @@ const ArticleCard = memo(function ArticleCard({ post }) {
           )}
         </div>
 
-        <div className='p-3'>
+        <div className='p-2.5'>
           <h3 className='text-sm font-medium text-zinc-800 dark:text-zinc-100 line-clamp-2 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors leading-snug'>
             {title}
           </h3>
-          <div className='flex items-center justify-end mt-2'>
+          <div className='flex items-center justify-end mt-1.5'>
             <LikeButton post={post} />
           </div>
         </div>

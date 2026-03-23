@@ -4,14 +4,12 @@ import { useNexLiteGlobal } from '..'
 import CONFIG from '../config'
 import { useRouter } from 'next/router'
 import { MenuItemDrop } from './MenuItemDrop'
-import RssButton from './RssButton'
 
 export const MenuList = ({ showSearch = true, ...props }) => {
   const { setSideBarVisible } = useNexLiteGlobal()
   const { customNav, customMenu, siteInfo } = props
   const { locale } = useGlobal()
   const router = useRouter()
-  const showRss = siteConfig('ENABLE_RSS')
   
   const defaultLinks = [
     {
@@ -23,7 +21,7 @@ export const MenuList = ({ showSearch = true, ...props }) => {
     },
     {
       id: 2,
-      icon: 'fas fa-th-large',
+      icon: 'fas fa-grip',
       name: locale.COMMON.CATEGORY,
       href: '/category',
       show: siteConfig('NEXLITE_MENU_CATEGORY', null, CONFIG)
@@ -56,19 +54,16 @@ export const MenuList = ({ showSearch = true, ...props }) => {
   return (
     <nav className='space-y-1'>
       <div className='flex flex-col items-center mb-5 pb-5 border-b border-zinc-100 dark:border-zinc-800'>
-        <div className='relative'>
-          <div 
-            className='w-16 h-16 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 mb-3 shadow-sm cursor-pointer hover:shadow-md transition-shadow'
-            onClick={() => router.push('/')}>
-            {siteInfo?.icon ? (
-              <img src={siteInfo.icon} alt='avatar' className='w-full h-full object-cover' />
-            ) : (
-              <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
-                <i className='fas fa-user text-white text-lg'></i>
-              </div>
-            )}
-          </div>
-          {showRss && <RssButton />}
+        <div 
+          className='w-16 h-16 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 mb-3 shadow-sm cursor-pointer hover:shadow-md transition-shadow'
+          onClick={() => router.push('/')}>
+          {siteInfo?.icon ? (
+            <img src={siteInfo.icon} alt='avatar' className='w-full h-full object-cover' />
+          ) : (
+            <div className='w-full h-full pix-gradient-bg flex items-center justify-center'>
+              <i className='fas fa-user text-white text-lg'></i>
+            </div>
+          )}
         </div>
         <div className='text-center'>
           <h5 className='text-lg font-bold text-zinc-800 dark:text-zinc-100 tracking-tight'>

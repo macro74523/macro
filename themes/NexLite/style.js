@@ -230,6 +230,23 @@ const Style = () => {
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
+
+      @keyframes danmaku {
+        from {
+          transform: translateX(100vw);
+        }
+        to {
+          transform: translateX(-100%);
+        }
+      }
+
+      .animate-danmaku {
+        animation: danmaku linear forwards;
+      }
+
+      .text-shadow-sm {
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
     `}</style>
   )
 }

@@ -36,6 +36,8 @@ const PostReaction = dynamic(() => import('./components/PostReaction'), { ssr: f
 const MobilePostDetail = dynamic(() => import('./components/MobilePostDetail'), { ssr: false })
 const PostInfo = dynamic(() => import('./components/PostInfo'), { ssr: false })
 const MobilePostFooter = dynamic(() => import('./components/MobilePostFooter'), { ssr: false })
+const Danmaku = dynamic(() => import('./components/Danmaku'), { ssr: false })
+const DanmakuModal = dynamic(() => import('./components/DanmakuModal'), { ssr: false })
 
 // Helper function to filter posts by keyword
 const filterPostsByKeyword = (posts, filterKey) => {
@@ -75,6 +77,8 @@ const LayoutBase = props => {
   })
   const [recentPosts, setRecentPosts] = useState([])
   const [sideBarVisible, setSideBarVisible] = useState(false)
+  const [danmakuModalOpen, setDanmakuModalOpen] = useState(false)
+  const [danmakuList, setDanmakuList] = useState([])
   const { updateDarkMode } = useGlobal()
 
   useEffect(() => {
@@ -94,6 +98,23 @@ const LayoutBase = props => {
     }
   }, [])
 
+  const openDanmakuModal = () => {
+    setDanmakuModalOpen(true)
+  }
+
+  const closeDanmakuModal = () => {
+    setDanmakuModalOpen(false)
+  }
+
+  const addDanmaku = (text) => {
+    const newItem = {
+      id: Date.now(),
+      text,
+      time: new Date().toISOString()
+    }
+    setDanmakuList(prev => [newItem, ...prev.slice(-50)])
+  }
+
   return (
     <ThemeGlobalNexLite.Provider
       value={{
@@ -105,12 +126,20 @@ const LayoutBase = props => {
         filterPosts,
         setFilterPosts,
         sideBarVisible,
-        setSideBarVisible
+        setSideBarVisible,
+        openDanmakuModal
       }}>
       <div
         id='theme-nexlite'
         className={`${siteConfig('FONT_STYLE')} w-full h-full min-h-screen scroll-smooth`}>
         <Style />
+
+        <Danmaku danmakuList={danmakuList} enabled={!post && danmakuList.length > 0} />
+        <DanmakuModal 
+          isOpen={danmakuModalOpen} 
+          onClose={closeDanmakuModal}
+          onSubmit={addDanmaku}
+        />
 
         <div
           id='wrapper'
@@ -152,12 +181,8 @@ const LayoutBase = props => {
 }
 
 const LayoutIndex = props => {
-  const { siteInfo } = props
   return (
     <>
-      <div className='lg:hidden mb-4'>
-        <Header siteInfo={siteInfo} />
-      </div>
       <PostListRecent />
       <LayoutPostList {...props} />
     </>
@@ -165,12 +190,15 @@ const LayoutIndex = props => {
 }
 
 const LayoutPostList = props => {
-  const { posts, categoryOptions, currentCategory } = props
+  const { posts, categoryOptions, currentCategory, siteInfo } = props
   const { filterKey } = useNexLiteGlobal()
   const filteredBlogPosts = filterPostsByKeyword(posts, filterKey)
 
   return (
     <>
+      <div className='lg:hidden mb-4'>
+        <Header siteInfo={siteInfo} />
+      </div>
       <CategoryTabs categories={categoryOptions} currentCategory={currentCategory} />
       <BlogPostBar {...props} />
       {siteConfig('POST_LIST_STYLE') === 'page' ? (

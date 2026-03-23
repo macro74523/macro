@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import SmartLink from '@/components/SmartLink'
 import { useRouter } from 'next/router'
+import { useNexLiteGlobal } from '..'
+import DanmakuButton from './DanmakuButton'
 
 const categoryIcons = {
   '推荐': 'fas fa-fire',
-  '热门': 'fas fa-fire-flame-curved',
+  '热门': 'fas fa-fire',
   '最新': 'fas fa-clock',
   '动作': 'fas fa-bolt',
   '冒险': 'fas fa-compass',
@@ -14,8 +16,8 @@ const categoryIcons = {
   '竞速': 'fas fa-car',
   '射击': 'fas fa-crosshairs',
   '策略': 'fas fa-chess',
-  '角色扮演': 'fas fa-hat-wizard',
-  '模拟': 'fas fa-vr-cardboard',
+  '角色扮演': 'fas fa-user-ninja',
+  '模拟': 'fas fa-cube',
   '多人': 'fas fa-users',
   '单人': 'fas fa-user',
   '经典': 'fas fa-star',
@@ -31,6 +33,7 @@ export default function CategoryTabs({ categories, currentCategory }) {
   const [showRightArrow, setShowRightArrow] = useState(false)
   const scrollRef = useRef(null)
   const router = useRouter()
+  const { openDanmakuModal } = useNexLiteGlobal()
 
   const defaultTabs = [
     { name: '推荐', href: '/', icon: 'fas fa-fire' },
@@ -85,8 +88,11 @@ export default function CategoryTabs({ categories, currentCategory }) {
       return true
     }
     
-    if (tab.href.startsWith('/category/') && query.slug === tab.name) {
-      return true
+    if (tab.href.startsWith('/category/')) {
+      const categorySlug = query.category || query.slug
+      if (categorySlug === tab.name) {
+        return true
+      }
     }
     
     if (currentCategory === tab.name) {
@@ -129,7 +135,7 @@ export default function CategoryTabs({ categories, currentCategory }) {
         
         <div
           ref={scrollRef}
-          className='flex items-center gap-2 overflow-x-auto scrollbar-hide py-2.5 scroll-smooth'
+          className='flex items-center gap-2 overflow-x-auto scrollbar-hide py-2.5 scroll-smooth flex-1'
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
@@ -161,10 +167,14 @@ export default function CategoryTabs({ categories, currentCategory }) {
           })}
         </div>
 
+        <div className='lg:hidden flex-shrink-0 pl-2 pr-1'>
+          <DanmakuButton onClick={openDanmakuModal} />
+        </div>
+
         {showRightArrow && (
           <button
             onClick={() => scroll('right')}
-            className='absolute right-0 z-10 w-8 h-8 flex items-center justify-center bg-gradient-to-l from-white dark:from-zinc-900 to-transparent focus:outline-none'
+            className='absolute right-10 lg:right-0 z-10 w-8 h-8 flex items-center justify-center bg-gradient-to-l from-white dark:from-zinc-900 to-transparent focus:outline-none'
             aria-label='向右滚动分类'
             type='button'>
             <i className='fas fa-chevron-right text-zinc-400 text-xs'></i>

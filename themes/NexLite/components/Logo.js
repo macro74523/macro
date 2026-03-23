@@ -1,16 +1,14 @@
 import { siteConfig } from '@/lib/config'
 import SmartLink from '@/components/SmartLink'
-import RssButton from './RssButton'
+import DanmakuButton from './DanmakuButton'
 
-export default function Logo({ siteInfo }) {
-  const showRss = siteConfig('ENABLE_RSS')
-  
+export default function Logo({ siteInfo, showDanmaku = true, onDanmakuClick }) {
   return (
     <SmartLink
       passHref
       href='/'
       className='logo cursor-pointer flex flex-col items-center text-center py-2 group'>
-      <div className='relative'>
+      <div className='relative inline-block'>
         {siteInfo?.icon ? (
           <img 
             src={siteInfo.icon} 
@@ -22,7 +20,11 @@ export default function Logo({ siteInfo }) {
             <i className='fas fa-gamepad text-white text-2xl'></i>
           </div>
         )}
-        {showRss && <RssButton />}
+        {showDanmaku && (
+          <div className='absolute -top-1 -right-1'>
+            <DanmakuButton onClick={onDanmakuClick} />
+          </div>
+        )}
       </div>
       <h1 className='text-base font-bold text-gray-800 dark:text-white leading-tight mb-1'>
         {siteInfo?.title}
