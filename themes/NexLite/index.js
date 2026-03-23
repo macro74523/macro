@@ -36,7 +36,6 @@ const PostReaction = dynamic(() => import('./components/PostReaction'), { ssr: f
 const MobilePostDetail = dynamic(() => import('./components/MobilePostDetail'), { ssr: false })
 const PostInfo = dynamic(() => import('./components/PostInfo'), { ssr: false })
 const MobilePostFooter = dynamic(() => import('./components/MobilePostFooter'), { ssr: false })
-const Danmaku = dynamic(() => import('./components/Danmaku'), { ssr: false })
 
 const filterPostsByKeyword = (posts, filterKey) => {
   if (!filterKey || !posts) {
@@ -95,15 +94,6 @@ const LayoutBase = props => {
     }
   }, [])
 
-  const scrollToComment = useCallback(() => {
-    if (isBrowser) {
-      const commentEl = document.getElementById('home-comment')
-      if (commentEl) {
-        commentEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
-    }
-  }, [])
-
   return (
     <ThemeGlobalNexLite.Provider
       value={{
@@ -115,15 +105,12 @@ const LayoutBase = props => {
         filterPosts,
         setFilterPosts,
         sideBarVisible,
-        setSideBarVisible,
-        scrollToComment
+        setSideBarVisible
       }}>
       <div
         id='theme-nexlite'
         className={`${siteConfig('FONT_STYLE')} w-full h-full min-h-screen scroll-smooth`}>
         <Style />
-
-        <Danmaku enabled={!post} />
 
         <div
           id='wrapper'
@@ -175,17 +162,17 @@ const LayoutIndex = props => {
 }
 
 const HomeComment = () => {
-  const homePost = { id: '/', title: '主页弹幕', comment: 'Show' }
+  const homePost = { id: '/', title: '留言板', comment: 'Show' }
   
   return (
     <div id='home-comment' className='mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800'>
       <div className='flex items-center gap-3 mb-4'>
         <div className='w-10 h-10 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center'>
-          <i className='fas fa-comments text-violet-500'></i>
+          <i className='fas fa-envelope text-violet-500'></i>
         </div>
         <div>
-          <h3 className='text-lg font-bold text-zinc-800 dark:text-zinc-100'>弹幕区</h3>
-          <p className='text-xs text-zinc-400 dark:text-zinc-500'>发送评论，让弹幕飘起来~</p>
+          <h3 className='text-lg font-bold text-zinc-800 dark:text-zinc-100'>留言板</h3>
+          <p className='text-xs text-zinc-400 dark:text-zinc-500'>欢迎留言交流，无需登录即可评论</p>
         </div>
       </div>
       <Comment frontMatter={homePost} />
