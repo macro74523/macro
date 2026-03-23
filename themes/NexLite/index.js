@@ -52,6 +52,8 @@ const filterPostsByKeyword = (posts, filterKey) => {
 const ThemeGlobalNexLite = createContext()
 export const useNexLiteGlobal = () => useContext(ThemeGlobalNexLite)
 
+const LoadingScreen = dynamic(() => import('./components/LoadingScreen'), { ssr: false })
+
 const LayoutBase = props => {
   const {
     allNavPages,
@@ -108,6 +110,7 @@ const LayoutBase = props => {
         sideBarVisible,
         setSideBarVisible
       }}>
+      <LoadingScreen />
       <div
         id='theme-nexlite'
         className={`${siteConfig('FONT_STYLE')} w-full h-full min-h-screen scroll-smooth`}>
@@ -432,31 +435,77 @@ const LayoutSlug = props => {
 
 const Layout404 = props => {
   const router = useRouter()
-  const { locale } = useGlobal()
+  const [countdown, setCountdown] = useState(5)
+  
   useEffect(() => {
-    setTimeout(() => {
-      const article = isBrowser && document.getElementById('article-wrapper')
-      if (!article) {
-        router.push('/').then(() => {
-        })
-      }
-    }, 3000)
-  }, [])
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          router.push('/')
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+    
+    return () => clearInterval(timer)
+  }, [router])
 
   return (
-    <>
-      <div className='text-black w-full h-screen text-center justify-center content-center items-center flex flex-col'>
-        <div className='dark:text-gray-200'>
-          <h2 className='inline-block border-r-2 border-gray-600 mr-2 px-3 py-2 align-top'>
-            <i className='mr-2 fas fa-spinner animate-spin' />
+    <div className='fixed inset-0 flex items-center justify-center bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800'>
+      <div className='text-center px-8'>
+        <div className='relative mb-8'>
+          <div className='text-[180px] md:text-[240px] font-black text-zinc-200 dark:text-zinc-800 select-none leading-none'>
             404
-          </h2>
-          <div className='inline-block text-left h-32 leading-10 items-center'>
-            <h2 className='m-0 p-0'>{locale.NAV.PAGE_NOT_FOUND_REDIRECT}</h2>
+          </div>
+          <div className='absolute inset-0 flex items-center justify-center'>
+            <div className='w-24 h-24 md:w-32 md:h-32 rounded-full bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center animate-pulse'>
+              <i className='fas fa-ghost text-4xl md:text-5xl text-violet-500 animate-bounce'></i>
+            </div>
+          </div>
+        </div>
+        
+        <h1 className='text-2xl md:text-3xl font-bold text-zinc-800 dark:text-zinc-100 mb-4'>
+          页面走丢了
+        </h1>
+        
+        <p className='text-zinc-500 dark:text-zinc-400 mb-8 max-w-md mx-auto'>
+          抱歉，您访问的页面不存在或已被删除。即将在 {countdown} 秒后返回首页。
+        </p>
+        
+        <div className='flex flex-col sm:flex-row gap-4 justify-center'>
+          <button
+            onClick={() => router.push('/')}
+            className='px-6 py-3 bg-violet-500 hover:bg-violet-600 text-white rounded-xl font-medium transition-all hover:scale-105 active:scale-95'>
+            <i className='fas fa-home mr-2'></i>
+            返回首页
+          </button>
+          <button
+            onClick={() => router.back()}
+            className='px-6 py-3 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-200 rounded-xl font-medium transition-all hover:scale-105 active:scale-95'>
+            <i className='fas fa-arrow-left mr-2'></i>
+            返回上页
+          </button>
+        </div>
+        
+        <div className='mt-12 flex justify-center gap-8 text-zinc-400 dark:text-zinc-500'>
+          <div className='text-center'>
+            <div className='text-2xl font-bold text-violet-500'>404</div>
+            <div className='text-xs'>错误代码</div>
+          </div>
+          <div className='w-px bg-zinc-200 dark:bg-zinc-700'></div>
+          <div className='text-center'>
+            <div className='text-2xl font-bold text-violet-500'>{countdown}s</div>
+            <div className='text-xs'>自动跳转</div>
           </div>
         </div>
       </div>
-    </>
+      
+      <div className='absolute bottom-8 left-0 right-0 text-center text-xs text-zinc-400 dark:text-zinc-500'>
+        <p>NexLite Theme • Powered by Notion</p>
+      </div>
+    </div>
   )
 }
 
