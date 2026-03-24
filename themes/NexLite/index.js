@@ -66,7 +66,6 @@ const LayoutBase = props => {
     post
   } = props
   const searchModal = useRef(null)
-  const commentRef = useRef(null)
   const [filterKey, setFilterKey] = useState('')
 
   const [filterPosts, setFilterPosts] = useState(() => {
@@ -119,7 +118,7 @@ const LayoutBase = props => {
         <div
           id='wrapper'
           className='relative flex justify-center w-full mx-auto gap-0 max-w-[1300px] lg:pt-10 pt-4 lg:px-4 px-0'>
-          <div className='bg-white dark:bg-zinc-900 lg:rounded-xl shadow-sm flex w-full'>
+          <div className='bg-white dark:bg-zinc-900 lg:rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex w-full'>
             <aside className='w-[180px] hidden lg:block flex-shrink-0 border-r border-zinc-100 dark:border-zinc-800 bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-900 dark:to-zinc-900'>
               <div className='sticky top-8 p-4'>
                 <MenuList {...props} showSearch={!post} />

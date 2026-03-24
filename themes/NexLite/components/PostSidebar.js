@@ -11,6 +11,9 @@ export default function PostSidebar({ post }) {
   return (
     <aside className='w-[280px] hidden xl:block flex-shrink-0 border-l border-zinc-100 dark:border-zinc-800'>
       <div className='sticky top-8 p-5'>
+        <div className='flex items-center justify-end gap-2 mb-6'>
+          <DarkModeButton />
+        </div>
         <div className='space-y-6'>
           <ReadingProgress />
 
@@ -81,13 +84,6 @@ export default function PostSidebar({ post }) {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-
-          <div className='pt-6 border-t border-zinc-100 dark:border-zinc-800'>
-            <div className='flex items-center justify-between'>
-              <span className='text-xs text-zinc-400 dark:text-zinc-500 font-medium'>主题切换</span>
-              <DarkModeButton />
             </div>
           </div>
         </div>

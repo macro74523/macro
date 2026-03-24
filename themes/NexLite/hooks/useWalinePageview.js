@@ -12,7 +12,9 @@ export function useWalinePageview(articlePath) {
     
     const fetchPageview = async () => {
       try {
-        const response = await fetch(`${serverURL}/api/article?path=${encodeURIComponent(articlePath)}`, {
+        const url = `${serverURL}/api/article?path=${encodeURIComponent(articlePath)}`
+        
+        const response = await fetch(url, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -25,8 +27,17 @@ export function useWalinePageview(articlePath) {
         
         const data = await response.json()
         
-        if (mounted && data && data.data) {
-          const count = data.data.time || data.data.pv || 0
+        if (mounted) {
+          let count = 0
+          
+          if (data && data.data) {
+            if (typeof data.data === 'number') {
+              count = data.data
+            } else if (typeof data.data === 'object') {
+              count = data.data.time || data.data.pv || data.data.readingCount || 0
+            }
+          }
+          
           setPageview(count)
           
           const elements = document.querySelectorAll('.waline-pageview-count')

@@ -1,6 +1,5 @@
 import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
-import { deepClone } from '@/lib/utils'
 import throttle from 'lodash.throttle'
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react'
 import { ArticleList } from './ArticleList'
@@ -25,7 +24,7 @@ export const BlogListScroll = props => {
 
   const postsToShow = useMemo(() => {
     if (!posts || !Array.isArray(posts)) return []
-    return deepClone(posts).slice(0, POSTS_PER_PAGE * page)
+    return posts.slice(0, POSTS_PER_PAGE * page)
   }, [posts, page, POSTS_PER_PAGE])
 
   const handleGetMore = useCallback(() => {
