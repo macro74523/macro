@@ -36,7 +36,6 @@ const SearchModal = dynamic(() => import('./components/SearchModal'), { ssr: fal
 const PostReaction = dynamic(() => import('./components/PostReaction'), { ssr: false })
 const MobilePostDetail = dynamic(() => import('./components/MobilePostDetail'), { ssr: false })
 const PostInfo = dynamic(() => import('./components/PostInfo'), { ssr: false })
-const MobilePostFooter = dynamic(() => import('./components/MobilePostFooter'), { ssr: false })
 
 const filterPostsByKeyword = (posts, filterKey) => {
   if (!filterKey || !posts) {
@@ -424,7 +423,6 @@ const LayoutSlug = props => {
           </div>
 
           {showRecommend && <PostListIndexCombine posts={randomPosts} />}
-          <MobilePostFooter siteInfo={siteInfo} />
         </div>
       )}
       <BackToTop />
